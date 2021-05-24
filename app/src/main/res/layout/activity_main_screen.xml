@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainScreenActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/recent_products_label"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="380dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="2dp"
+        android:text="@string/recent_product_list_description"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.524"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="380dp"
+        android:layout_height="450dp"
+        android:layout_marginTop="15dp"
+        app:cardBackgroundColor="@color/cardview_bg"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/customListsButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.487"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintVertical_bias="0.125">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/mainScreenRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="false"
+            android:paddingTop="10dp"
+            android:paddingBottom="20dp"
+            android:saveEnabled="false" />
+    </androidx.cardview.widget.CardView>
+
+    <ImageButton
+        android:id="@+id/customListsButton"
+        style="@android:style/Widget.Holo.ImageButton"
+        android:layout_width="94dp"
+        android:layout_height="90dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginRight="56dp"
+        android:layout_marginBottom="44dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/manage_custom_lists_button"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/cutom_list_icon" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/typeBarcodeButton"
+        android:layout_width="173dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="44dp"
+        android:padding="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/type_barcode"
+        android:textColor="@color/white"
+        app:backgroundTint="#00060E15"
+        app:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/customListsButton"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/scanNewProductButton"
+        app:rippleColor="#00BCD4"
+        app:strokeColor="@color/white"
+        app:strokeWidth="1dp" />
+
+    <Button
+        android:id="@+id/scanNewProductButton"
+        android:layout_width="172dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginBottom="4dp"
+        android:text="@string/scan_new_product"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:backgroundTint="@color/viands_confirm_button_skin"
+        app:layout_constraintBottom_toTopOf="@+id/typeBarcodeButton"
+        app:layout_constraintEnd_toStartOf="@+id/customListsButton"
+        app:layout_constraintHorizontal_bias="0.426"
+        app:layout_constraintStart_toStartOf="parent"
+        app:rippleColor="#00BCD4" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

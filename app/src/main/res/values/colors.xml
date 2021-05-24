@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name = "viands_normal_theme_darker">#060E15</color>
+    <color name  = "viands_normal_theme"> #1c2328</color>
+    <color name = "viands_confirm_button_skin">#99F331</color>
+    <color name="cardview_bg">#13171B</color>
+    <color name = "light_grey_font_colour" >#FFD6D5D5</color>
+    <color name = "grade_a">#09E325</color>
+    <color name = "grade_b">#74E04D</color>
+    <color name = "grade_c">#E9F00B</color>
+    <color name = "grade_d">#FF9100</color>
+    <color name = "grade_e">#FD4040</color>
+    <color name="light_grey_font">#FFD6D5D5</color>
+    <color name = "dark_grey_cardview_bg">#373737</color>
+    <color name = "item_Selected">#FF362450</color>
+    <color name = "text_hint_green">#9F39D117</color>
+    <color name  = "button_skin_bucky">#006699</color>
+    <color name="overlay_card_bg">#363C5C</color>
+    <color name="text_hint_colour">#A0A5A8</color>
+    <color name="swipe_bg_color">#b31515</color>
+    <color name="default_list_colour">#00BCD4</color>
+    <color name="list_colour_default">#00BCD4</color>
+    <color name="list_colour_pink">#F475F5</color>
+    <color name="list_colour_red">#FF9696</color>
+    <color name="list_colour_green">#71E86D</color>
+    <color name="list_colour_yellow">#FEFE6E</color>
+    <color name="list_colour_purple">#AD93F3</color>
+</resources>

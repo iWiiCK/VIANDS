@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ClickedList">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView4"
+        android:layout_width="380dp"
+        android:layout_height="600dp"
+        android:layout_marginTop="20dp"
+        app:cardBackgroundColor="@color/cardview_bg"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listDescriptionLabel"
+        app:layout_constraintVertical_bias="0.0">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/clickedListRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="false"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/listDescriptionLabel"
+        android:layout_width="380dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="2dp"
+        android:text="@string/recent_product_list_description"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/hiddenEditMenu"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/overlay_card_bg"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="20dp"
+        app:cardMaxElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="@string/ediiting_list"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/list_colour"
+                android:textColor="@color/light_grey_font"
+                android:textStyle="italic"
+                app:layout_constraintBottom_toTopOf="@+id/cardView2"
+                app:layout_constraintStart_toStartOf="@+id/cardView2" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView2"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginBottom="10dp"
+                android:padding="10dp"
+                app:cardBackgroundColor="#00FFFFFF"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintBottom_toTopOf="@+id/cardView6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.31"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <RadioGroup
+                    android:id="@+id/listColourRadioGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|fill"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/cyanRadioButton"
+                        android:layout_width="32dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/list_colour_default"
+                        app:buttonTint="@color/cardview_bg" />
+
+                    <RadioButton
+                        android:id="@+id/purpleRadioButton"
+                        android:layout_width="32dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginLeft="6dp"
+                        android:background="@color/list_colour_purple"
+                        android:ellipsize="middle"
+                        app:buttonTint="@color/cardview_bg" />
+
+                    <RadioButton
+                        android:id="@+id/pinkRadioButton"
+                        android:layout_width="32dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginLeft="6dp"
+                        android:background="@color/list_colour_pink"
+                        app:buttonTint="@color/cardview_bg" />
+
+                    <RadioButton
+                        android:id="@+id/redRadioButton"
+                        android:layout_width="32dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginLeft="6dp"
+                        android:background="@color/list_colour_red"
+                        app:buttonTint="@color/cardview_bg" />
+
+                    <RadioButton
+                        android:id="@+id/greenRadioButton"
+                        android:layout_width="32dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginLeft="6dp"
+                        android:background="@color/list_colour_green"
+                        app:buttonTint="@color/cardview_bg" />
+
+                    <RadioButton
+                        android:id="@+id/yellowRadioButton"
+                        android:layout_width="32dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginLeft="6dp"
+                        android:background="@color/list_colour_yellow"
+                        app:buttonTint="@color/cardview_bg" />
+
+                </RadioGroup>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="100dp"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView4">
+
+                <EditText
+                    android:id="@+id/listNamePlaintext"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:background="@color/dark_grey_cardview_bg"
+                    android:ems="10"
+                    android:hint="@string/enter_list_name"
+                    android:inputType="textPersonName"
+                    android:padding="20dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#A0A5A8" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView6"
+                app:layout_constraintVertical_bias="0.07999998">
+
+                <EditText
+                    android:id="@+id/listDescriptionPlainText"
+                    android:layout_width="300dp"
+                    android:layout_height="150dp"
+                    android:background="@color/dark_grey_cardview_bg"
+                    android:ems="10"
+                    android:gravity="center_horizontal|left"
+                    android:hint="@string/enter_list_description"
+                    android:inputType="textMultiLine|textPersonName"
+                    android:isScrollContainer="false"
+                    android:padding="20dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#A0A5A8" />
+            </androidx.cardview.widget.CardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cancelEditingButton"
+                android:layout_width="140dp"
+                android:layout_height="73dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="52dp"
+                android:layout_marginRight="52dp"
+                android:height="50dp"
+                android:fontFamily="sans-serif-black"
+                android:text="@string/cancel"
+                android:textColor="@color/white"
+                app:backgroundTint="#00FFFFFF"
+                app:cornerRadius="10dp"
+                app:elevation="22dp"
+                app:layout_constraintBottom_toBottomOf="@+id/saveChangesButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView5"
+                app:layout_constraintVertical_bias="1.0"
+                app:rippleColor="#00BCD4"
+                app:strokeColor="#FFFFFF"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/saveChangesButton"
+                android:layout_width="140dp"
+                android:layout_height="73dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="32dp"
+                android:height="50dp"
+                android:fontFamily="sans-serif-black"
+                android:text="@string/save_changes"
+                android:textColor="@color/black"
+                app:backgroundTint="@color/viands_confirm_button_skin"
+                app:cornerRadius="10dp"
+                app:elevation="22dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/cancelEditingButton"
+                app:layout_constraintHorizontal_bias="0.949"
+                app:layout_constraintStart_toStartOf="parent"
+                app:rippleColor="#00BCD4" />
+
+            <View
+                android:id="@+id/divider5"
+                android:layout_width="150dp"
+                android:layout_height="1dp"
+                android:background="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/cardView6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView4"
+                app:layout_constraintVertical_bias="0.13999999" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
