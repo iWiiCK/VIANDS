@@ -6,21 +6,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button startButton;
     MySQLiteDB mySQLiteDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        final int DELAY_SECONDS = 1;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //TODO: Start Service to Check Internet Connectivity (STILL HAVE TO IMPLEMENT THIS)
-        //////////////////////////////////////////////////////////////////////////////
 
         //Create the Local SQLite database for Products, Lists and Products_toLists
         mySQLiteDB = new MySQLiteDB(this);
@@ -31,9 +29,12 @@ public class MainActivity extends AppCompatActivity {
         //dummyDBData.clearDummyData(mySQLiteDB);
         mySQLiteDB.addList(new List(0, "Recent Products", "This is a list of all the Recent Products Scanned By You", 0));
 
-        //TODO: Automate this task later on so it'll automatically open the main screen after a few seconds.
-        startButton = findViewById(R.id.startButton);
-        startButton.setOnClickListener(v -> loadMainScreen(v.getContext()));
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadMainScreen(getBaseContext());
+            }
+        }, DELAY_SECONDS* 1000);
 
     }
 

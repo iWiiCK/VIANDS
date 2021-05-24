@@ -75,4 +75,5 @@
     <string name="displaying_offline_data_refresh_for_live_data">Displaying Offline Data. Refresh For Live Data ...</string>
     <string name="refresh_product">Refresh Product</string>
     <string name="update_product">Update Product</string>
+    <string name="login_to_google_account">Login to Google Account</string>
 </resources>
