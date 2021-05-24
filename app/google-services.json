@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "93978634070",
+    "project_id": "viands-v3",
+    "storage_bucket": "viands-v3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:93978634070:android:c8ad8bb14d155b51e898f7",
+        "android_client_info": {
+          "package_name": "com.example.viands5"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "93978634070-sgpq6b7blo8piqe5rcgobgd9k36pbjdt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDAQx8y855lH07Q91NKp84_E6DGILBMYA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "93978634070-sgpq6b7blo8piqe5rcgobgd9k36pbjdt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
