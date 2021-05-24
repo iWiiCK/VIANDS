@@ -372,7 +372,11 @@ public class DisplayingProductDetails extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
-        refreshProduct(code);
+        CheckNetwork checkNetwork = new CheckNetwork(this);
+        if(checkNetwork.isOnline())
+            refreshProduct(code);
+        else
+            Toast.makeText(this, "You Are Offline !", Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
 
