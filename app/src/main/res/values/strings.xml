@@ -76,4 +76,14 @@
     <string name="refresh_product">Refresh Product</string>
     <string name="update_product">Update Product</string>
     <string name="login_to_google_account">Login to Google Account</string>
+    <string name="welcome">WELCOME</string>
+    <string name="to_viands">to Viands</string>
+    <string name="sign_in_with_google">Sign In With Google</string>
+    <string name="go_back">GO BACK</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="place_holder_image">place holder image</string>
+    <string name="john_doe">John Doe</string>
+    <string name="backup_data">Backup Data</string>
+    <string name="restore_backup">Restore Backup</string>
+    <string name="my_account">My Account</string>
 </resources>

@@ -64,9 +64,6 @@ public class MainScreenActivity extends AppCompatActivity {
                 IntentIntegrator integrator = new IntentIntegrator(MainScreenActivity.this);
                 integrator.setOrientationLocked(true);
 
-            /*integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
-            integrator.setCameraId(0);  // Use a specific camera of the device*/
-
                 integrator.setBarcodeImageEnabled(true);
                 integrator.setPrompt("Scan Food Product");
                 integrator.initiateScan();
@@ -170,6 +167,9 @@ public class MainScreenActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_screen_menu, menu);
 
+        if(signedIn)
+            menu.getItem(0).setTitle(R.string.my_account);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -178,7 +178,8 @@ public class MainScreenActivity extends AppCompatActivity {
     {
         if(item.getItemId() == R.id.login_button)
         {
-            
+            Intent i = new Intent(getBaseContext(), LoginScreen.class);
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
