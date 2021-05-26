@@ -55,7 +55,8 @@ public class LoginScreen extends AppCompatActivity
     private Button backupDataButton, restoreBackupButton;
 
     private String userId;
-    FirestoreHandler firestoreHandler;
+    private FirestoreHandler firestoreHandler;
+    private MySQLiteDB mySQLiteDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -71,6 +72,8 @@ public class LoginScreen extends AppCompatActivity
         signOutButton = findViewById(R.id.signOutButton);
         backupDataButton = findViewById(R.id.backupDataButton);
         restoreBackupButton = findViewById(R.id.restoreBackupButton);
+        mySQLiteDB = new MySQLiteDB(this);
+        firestoreHandler = new FirestoreHandler(this);
 
 
         // Configure Google Sign In
@@ -199,19 +202,39 @@ public class LoginScreen extends AppCompatActivity
 
         restoreBackupButton.setOnClickListener(v->
         {
-
+            displayRestoreAlert();
         });
     }
 
-    private void displayBackupOverrideAlert()
+    //Restoring an already created backup
+    private void displayRestoreAlert()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("You Have a previous Backup !");
-        builder.setMessage("Would you like to Override your previous Backup and create this new one ?" );
+        builder.setIcon(R.drawable.restore_button_logo);
+        builder.setTitle("RESTORING !");
+        builder.setMessage("Restoring a Backup will change your current database with the latest backup you have created. This action is final" );
 
         builder.setPositiveButton("YES", (dialog, which) ->
         {
-            firestoreHandler = new FirestoreHandler(this);
+            firestoreHandler.restoreBackup();
+        });
+
+        builder.setNegativeButton("NO", (dialog, which) -> {});
+
+        builder.setCancelable(true);
+        builder.create().show();
+    }
+
+    //Creating a backup
+    private void displayBackupOverrideAlert()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(R.drawable.backup_button_logo);
+        builder.setTitle("NEW BACKUP !");
+        builder.setMessage("A new backup will override any backups you have created earlier. Would you like to Override your previous Backup and create this new one ?" );
+
+        builder.setPositiveButton("YES", (dialog, which) ->
+        {
             firestoreHandler.backUpLocalStorage();
         });
 

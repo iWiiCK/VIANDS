@@ -1,7 +1,5 @@
 package com.example.viands5;
 
-import android.content.Context;
-
 public class DummyDBData
 {
  public DummyDBData() {}
@@ -75,6 +73,6 @@ public class DummyDBData
 
    public void clearDummyData(MySQLiteDB localDB)
    {
-       localDB.deleteAllTableData();
+       localDB.factoryResetDatabase();
    }
 }

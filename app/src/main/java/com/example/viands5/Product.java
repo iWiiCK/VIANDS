@@ -1,5 +1,9 @@
 package com.example.viands5;
 
+import android.util.Log;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class Product
@@ -17,6 +21,19 @@ public class Product
         this.ingredients = ingredients;
         this.nutrients = nutrients;
         this.productImage = productImage;
+    }
+
+    public Product(String code, String name, String grade, String nova_group, String ingredients, String nutrients, @Nullable byte[] productImage)
+    {
+        this.code = code;
+        this.name = name;
+        this.grade = grade;
+        this.nova_group = Integer.parseInt(nova_group);
+        this.ingredients = ingredients;
+        this.nutrients = nutrients;
+        this.productImage = productImage;
+
+        Log.d("product", "Nova Group" + " => " + nova_group);
     }
 
 

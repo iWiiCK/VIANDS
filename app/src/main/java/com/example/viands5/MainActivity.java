@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         DummyDBData dummyDBData = new DummyDBData();
         //dummyDBData.loadDummyData(mySQLiteDB);
         //dummyDBData.clearDummyData(mySQLiteDB);
-        //mySQLiteDB.addList(new List(0, "Recent Products", "This is a list of all the Recent Products Scanned By You", 0));
 
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override

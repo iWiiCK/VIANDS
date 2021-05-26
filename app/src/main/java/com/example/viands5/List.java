@@ -13,6 +13,14 @@ public class List
         this.listColour = listColour;
     }
 
+    public List(String id, String name, String description, String listColour)
+    {
+        this.id = Integer.parseInt(id);
+        this.name = name;
+        this.description = description;
+        this.listColour = Integer.parseInt(listColour);
+    }
+
     public int getId()
     {
         return id;

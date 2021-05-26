@@ -14,6 +14,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class FirestoreHandler
 {
@@ -40,6 +42,72 @@ public class FirestoreHandler
 
         this.context = context;
         mySQLiteDB = new MySQLiteDB(this.context);
+    }
+
+    public void restoreBackup()
+    {
+        mySQLiteDB.factoryResetDatabase();
+
+        firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
+                .get()
+                .addOnCompleteListener(task ->
+                {
+                    if (task.isSuccessful())
+                    {
+                        for (QueryDocumentSnapshot document : task.getResult())
+                        {
+                            mySQLiteDB.addProduct(new Product(
+                                    document.getString("code"),
+                                    document.getString("name"),
+                                    document.getString("grade"),
+                                    document.getString("nova_grade"),
+                                    document.getString("ingredients"),
+                                    document.getString("nutrients"),
+                                    null
+                            ));
+                        }
+                    }
+                    else
+                        Log.w(TAG, "Error getting documents.", task.getException());
+                });
+
+        firestore.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
+                .get()
+                .addOnCompleteListener(task ->
+                {
+                    if (task.isSuccessful())
+                    {
+                        for (QueryDocumentSnapshot document : task.getResult())
+                        {
+                            mySQLiteDB.addList(new List(
+                                    document.getString("id"),
+                                    document.getString("list_name"),
+                                    document.getString("list_description"),
+                                    document.getString("list_colour")
+                            ));
+                        }
+                    }
+                    else
+                        Log.w(TAG, "Error getting documents.", task.getException());
+                });
+
+        firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
+                .get()
+                .addOnCompleteListener(task ->
+                {
+                    if (task.isSuccessful())
+                    {
+                        for (QueryDocumentSnapshot document : task.getResult())
+                        {
+                            mySQLiteDB.addProductsToLists(
+                                    document.getString("product_code"),
+                                    document.getString("list_id")
+                            );
+                        }
+                    }
+                    else
+                        Log.w(TAG, "Error getting documents.", task.getException());
+                });
     }
 
     public void backUpLocalStorage()
@@ -141,9 +209,10 @@ public class FirestoreHandler
                 products.put("code", cursor.getString(0));
                 products.put("name", cursor.getString(1));
                 products.put("grade", cursor.getString(2));
-                products.put("nova_grade", cursor.getInt(3));
+                products.put("nova_grade", String.valueOf(cursor.getInt(3)));
                 products.put("ingredients", cursor.getString(4));
                 products.put("nutrients", cursor.getString(5));
+                //TODO: DID not backup the Image yet
                 //products.put("product_image", cursor.getString(6));
 
                 firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
@@ -163,10 +232,10 @@ public class FirestoreHandler
         {
             while (cursor.moveToNext())
             {
-                lists.put("id", cursor.getInt(0));
+                lists.put("id", String.valueOf(cursor.getInt(0)));
                 lists.put("list_name", cursor.getString(1));
                 lists.put("list_description", cursor.getString(2));
-                lists.put("list_colour", cursor.getInt(3));
+                lists.put("list_colour", String.valueOf(cursor.getInt(3)));
 
                 firestore.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
                         .document(cursor.getString(0)).set(lists);
@@ -185,7 +254,7 @@ public class FirestoreHandler
             while (cursor.moveToNext())
             {
                 productsToLists.put("product_code", cursor.getInt(0));
-                productsToLists.put("list_id", cursor.getInt(1));
+                productsToLists.put("list_id", String.valueOf(cursor.getInt(1)));
 
                 firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
                         .document(cursor.getString(0) +"_"+ cursor.getInt(1)).set(productsToLists);

@@ -74,6 +74,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
         db.execSQL(createListsTableQuery);
         db.execSQL(createProductsToListsTableQuery);
 
+        //This is adding the default list which is the recent products list
+        addList(new List(0, "Recent Products", "This is a list of all the Recent Products Scanned By You", 0));
+
     }
 
     @Override
@@ -356,6 +359,18 @@ public class MySQLiteDB extends SQLiteOpenHelper
 
     }
 
+    public void addProductsToLists(String productCode, String listId)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(COLUMN_PRODUCT_CODE, productCode);
+        cv.put(COLUMN_LIST_ID, Integer.parseInt(listId));
+
+        db.insert(PRODUCTS_TO_LISTS_TABLE, null, cv);
+
+    }
+
     public void deleteProductFromList(String productCode, int listId)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -369,15 +384,18 @@ public class MySQLiteDB extends SQLiteOpenHelper
     }
 
 
-    //Delete all table rows from all the tables. This method is used for testing the SQLite database
+
+
+    //Delete all table rows from all the tables.
     ////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void deleteAllTableData()
+    public void factoryResetDatabase()
     {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + PRODUCTS_TABLE);
-        db.execSQL("DELETE FROM " + LISTS_TABLE);
+        db.delete(LISTS_TABLE, COLUMN_ID + "!=?", new String[]{Integer.toString(0)});
+        //db.execSQL("DELETE FROM " + LISTS_TABLE);
         db.execSQL("DELETE FROM " + PRODUCTS_TO_LISTS_TABLE);
     }
 }
