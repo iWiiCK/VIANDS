@@ -1,21 +1,19 @@
 package com.example.viands5;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -23,21 +21,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +55,7 @@ public class LoginScreen extends AppCompatActivity
     private Button backupDataButton, restoreBackupButton;
 
     private String userId;
+    FirestoreHandler firestoreHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -93,6 +90,7 @@ public class LoginScreen extends AppCompatActivity
 
         else
             displaySignInScreen();
+
     }
 
     private void displaySignInScreen()
@@ -190,84 +188,36 @@ public class LoginScreen extends AppCompatActivity
 
     private void displayUserData()
     {
-        final String ROOT_COLLECTION = "users";
-        final String USER_ID = user.getUid();
-
         Picasso.get().load(user.getPhotoUrl()).into(googleAccountImage);
         userName.setText(user.getDisplayName());
 
         backupDataButton.setOnClickListener(v->
         {
-            Map<String, Object> data = new HashMap<>();
-            data.put("user_name", user.getDisplayName());
-            data.put("last_scanned", Calendar.getInstance().getTime());
+            displayBackupOverrideAlert();
 
-            //Setting up root data, updating backup times
-            firestore.collection(ROOT_COLLECTION).document(USER_ID).set(data);
-            backUpLocalStorage(ROOT_COLLECTION, USER_ID);
+        });
+
+        restoreBackupButton.setOnClickListener(v->
+        {
 
         });
     }
 
-    private void backUpLocalStorage(final String ROOT_COLLECTION, final String USER_ID)
+    private void displayBackupOverrideAlert()
     {
-        Cursor cursor;
-        final String PRODUCTS_COLLECTION = "products";
-        final String LISTS_COLLECTION = "lists";
-        final String PRODUCTS_TO_LISTS_COLLECTION = "products_to_lists";
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("You Have a previous Backup !");
+        builder.setMessage("Would you like to Override your previous Backup and create this new one ?" );
 
-        Map<String, Object> products = new HashMap<>();
-        Map<String, Object> lists = new HashMap<>();
-        Map<String, Object> productsToLists = new HashMap<>();
-
-        MySQLiteDB mySQLiteDB = new MySQLiteDB(this);
-
-        cursor = mySQLiteDB.readProductsTableData();
-        if(cursor != null)
+        builder.setPositiveButton("YES", (dialog, which) ->
         {
-            while (cursor.moveToNext())
-            {
-                products.put("code", cursor.getString(0));
-                products.put("name", cursor.getString(1));
-                products.put("grade", cursor.getString(2));
-                products.put("nova_grade", cursor.getInt(3));
-                products.put("ingredients", cursor.getString(4));
-                products.put("nutrients", cursor.getString(5));
-                products.put("product_image", cursor.getString(6));
+            firestoreHandler = new FirestoreHandler(this);
+            firestoreHandler.backUpLocalStorage();
+        });
 
-                firestore.collection(ROOT_COLLECTION).document(USER_ID).collection(PRODUCTS_COLLECTION)
-                        .document(cursor.getString(0)).set(products);
-            }
-        }
+        builder.setNegativeButton("NO", (dialog, which) -> {});
 
-        cursor = mySQLiteDB.readListsTableData();
-        if(cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                lists.put("id", cursor.getInt(0));
-                lists.put("list_name", cursor.getString(1));
-                lists.put("list_description", cursor.getString(2));
-                lists.put("list_colour", cursor.getInt(3));
-
-                firestore.collection(ROOT_COLLECTION).document(USER_ID).collection(LISTS_COLLECTION)
-                        .document(cursor.getString(0)).set(lists);
-            }
-        }
-
-        cursor = mySQLiteDB.readProductsToListsTableData();
-        if(cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                productsToLists.put("product_code", cursor.getInt(0));
-                productsToLists.put("list_id", cursor.getInt(1));
-
-                firestore.collection(ROOT_COLLECTION).document(USER_ID).collection(PRODUCTS_TO_LISTS_COLLECTION)
-                        .document(cursor.getString(0) +"_"+ cursor.getInt(1)).set(productsToLists);
-            }
-        }
-
-
+        builder.setCancelable(true);
+        builder.create().show();
     }
 }
