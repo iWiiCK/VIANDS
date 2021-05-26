@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginScreen">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/alreadySignedInLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardBackgroundColor="#00FFFFFF"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView7"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="40dp"
+                app:cardCornerRadius="100dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/googleAccountImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/place_holder_image"
+                    tools:src="@tools:sample/avatars" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/userName"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:gravity="left"
+                android:text="@string/john_doe"
+                android:textColor="#FFFFFF"
+                android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView7"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/cardView7"
+                app:layout_constraintTop_toTopOf="@+id/cardView7" />
+
+            <View
+                android:id="@+id/divider7"
+                android:layout_width="380dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="52dp"
+                android:alpha="0.5"
+                android:background="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/userName" />
+
+            <Button
+                android:id="@+id/restoreBackupButton"
+                android:layout_width="350dp"
+                android:layout_height="70dp"
+                android:layout_marginBottom="50dp"
+                android:drawableLeft="@drawable/restore_button_logo"
+                android:fontFamily="sans-serif"
+                android:paddingLeft="60dp"
+                android:paddingRight="50dp"
+                android:text="@string/restore_backup"
+                android:textColor="#000000"
+                app:backgroundTint="#FFFFFF"
+                app:layout_constraintBottom_toTopOf="@+id/signOutButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <Button
+                android:id="@+id/backupDataButton"
+                android:layout_width="350dp"
+                android:layout_height="70dp"
+                android:drawableLeft="@drawable/backup_button_logo"
+                android:fontFamily="sans-serif"
+                android:paddingLeft="60dp"
+                android:paddingRight="50dp"
+                android:text="@string/backup_data"
+                android:textColor="#000000"
+                app:backgroundTint="#FFFFFF"
+                app:layout_constraintBottom_toTopOf="@+id/restoreBackupButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/signOutButton"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginBottom="50dp"
+                android:padding="10dp"
+                android:paddingTop="10dp"
+                android:text="@string/sign_out"
+                android:textColor="@color/white"
+                app:backgroundTint="#00060E15"
+                app:cornerRadius="100dp"
+                app:elevation="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:rippleColor="#00BCD4"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/signInLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:cardBackgroundColor="#00FFFFFF"
+        app:cardElevation="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/goBackButton"
+                android:layout_width="350dp"
+                android:layout_height="70dp"
+                android:fontFamily="sans-serif"
+                android:padding="10dp"
+                android:paddingTop="10dp"
+                android:text="@string/go_back"
+                android:textColor="@color/white"
+                app:backgroundTint="#00060E15"
+                app:elevation="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/googleSignInButton"
+                app:rippleColor="#00BCD4"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1dp" />
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="200dp"
+                android:fontFamily="sans-serif-black"
+                android:text="@string/welcome"
+                android:textColor="#00BCD4"
+                android:textSize="50sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.46"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="200dp"
+                android:layout_marginLeft="200dp"
+                android:fontFamily="sans-serif-black"
+                android:text="@string/to_viands"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                app:layout_constraintStart_toStartOf="@+id/textView12"
+                app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+            <Button
+                android:id="@+id/googleSignInButton"
+                android:layout_width="350dp"
+                android:layout_height="70dp"
+                android:drawableLeft="@drawable/google_logo"
+                android:fontFamily="sans-serif"
+                android:paddingLeft="60dp"
+                android:paddingRight="50dp"
+                android:text="@string/sign_in_with_google"
+                android:textColor="#000000"
+                app:backgroundTint="#FFFFFF"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView12"
+                app:layout_constraintVertical_bias="0.38" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

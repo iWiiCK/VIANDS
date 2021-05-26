@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,10 +19,18 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-public class MainScreenActivity extends AppCompatActivity {
+public class MainScreenActivity extends AppCompatActivity
+{
+
+    private FirebaseAuth auth;
+    private FirebaseUser user;
+    private boolean signedIn = false;
+
 
     private long back_pressed = 0;
     private ImageButton customListsButton;
@@ -31,11 +41,18 @@ public class MainScreenActivity extends AppCompatActivity {
     CustomLinearAdapter customLinearAdapter;
     RecyclerView recyclerView;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+
+        //Firebase Google authentication
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
+        if(user != null)
+            signedIn = true;
+
 
         //Populating the Recycler View
         /////////////////////////////////

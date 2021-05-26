@@ -24,7 +24,7 @@
         <activity
             android:name=".SearchingTheDatabse"
             android:parentActivityName=".MainScreenActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".CreateNewList"
             android:label="Creating New Custom List"
