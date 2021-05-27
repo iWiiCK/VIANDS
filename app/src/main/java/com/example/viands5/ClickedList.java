@@ -25,6 +25,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -46,8 +47,8 @@ public class ClickedList extends AppCompatActivity
     private CardView hiddenEditMenu;
     private TextView listNamePlaintext, listDescriptionPlainText;
     private Button cancelEditingButton, saveChangesButton;
-    RadioGroup listColourRadioGroup;
-    RadioButton cyanRadioButton, purpleRadioButton, pinkRadioButton, redRadioButton, greenRadioButton, yellowRadioButton;
+    private RadioGroup listColourRadioGroup;
+    private RadioButton cyanRadioButton, purpleRadioButton, pinkRadioButton, redRadioButton, greenRadioButton, yellowRadioButton;
 
 
     @Override

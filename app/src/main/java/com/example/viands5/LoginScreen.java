@@ -156,27 +156,29 @@ public class LoginScreen extends AppCompatActivity
         autoBackupSwitch.setChecked(enableAutoBackup);
         rememberLoginSwitch.setChecked(rememberLogin);
 
-        autoBackupSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        autoBackupSwitch.setOnCheckedChangeListener((buttonView, isChecked) ->
         {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            if(isChecked)
             {
-                if(isChecked)
-                {
-                    if (rememberLoginSwitch.isChecked())
-                        mySQLiteDB.updateUserPreferences(userID,1 , 1);
-                    else
-                        mySQLiteDB.updateUserPreferences(userID, 1, 0);
-                }
+                backupDataButton.setBackgroundColor(Color.GRAY);
+                backupDataButton.setEnabled(false);
 
+                if (rememberLoginSwitch.isChecked())
+                    mySQLiteDB.updateUserPreferences(userID,1 , 1);
                 else
-                {
-                    if (rememberLoginSwitch.isChecked())
-                        mySQLiteDB.updateUserPreferences(userID,0 , 1);
-                    else
-                        mySQLiteDB.updateUserPreferences(userID, 0, 0);
+                    mySQLiteDB.updateUserPreferences(userID, 1, 0);
+            }
 
-                }
+            else
+            {
+                backupDataButton.setBackgroundColor(Color.WHITE);
+                backupDataButton.setEnabled(true);
+
+                if (rememberLoginSwitch.isChecked())
+                    mySQLiteDB.updateUserPreferences(userID,0 , 1);
+                else
+                    mySQLiteDB.updateUserPreferences(userID, 0, 0);
+
             }
         });
 
@@ -276,6 +278,13 @@ public class LoginScreen extends AppCompatActivity
     {
         Picasso.get().load(user.getPhotoUrl()).into(googleAccountImage);
         userName.setText(user.getDisplayName());
+
+        if(autoBackupSwitch.isChecked())
+        {
+            backupDataButton.setBackgroundColor(Color.GRAY);
+            backupDataButton.setEnabled(false);
+        }
+
 
         DocumentReference docRef = firestore.collection("users").document(user.getUid());
         docRef.get().addOnCompleteListener(task ->

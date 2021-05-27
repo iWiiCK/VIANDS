@@ -94,4 +94,5 @@
     <string name="remember_user_when_login_in">Remember User when Logging In</string>
     <string name="loading_last_backup">...</string>
     <string name="no_backups_created">You have Not Created Any Backups Yet !</string>
+    <string name="auto_backup_enabled">AUTO BACKUP IS ENABLED</string>
 </resources>
