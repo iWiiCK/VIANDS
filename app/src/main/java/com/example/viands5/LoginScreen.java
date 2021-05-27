@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class LoginScreen extends AppCompatActivity
 {
@@ -63,6 +65,8 @@ public class LoginScreen extends AppCompatActivity
     private FirestoreHandler firestoreHandler;
 
     private TextView lastBackupText;
+    private com.google.android.material.switchmaterial.SwitchMaterial autoBackupSwitch, rememberLoginSwitch;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -79,7 +83,11 @@ public class LoginScreen extends AppCompatActivity
         backupDataButton = findViewById(R.id.backupDataButton);
         restoreBackupButton = findViewById(R.id.restoreBackupButton);
         lastBackupText = findViewById(R.id.lastBackupText);
+        autoBackupSwitch = findViewById(R.id.autoBackupSwitch);
+        rememberLoginSwitch = findViewById(R.id.rememberLoginSwitch);
 
+
+        //Always disable the restore button till searching for a backup is done.
         restoreBackupButton.setEnabled(false);
         restoreBackupButton.setBackgroundColor(Color.GRAY);
 
@@ -183,7 +191,6 @@ public class LoginScreen extends AppCompatActivity
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             user = auth.getCurrentUser();
-                            assert user != null;
                             recreate();
                         }
                         else
@@ -208,9 +215,15 @@ public class LoginScreen extends AppCompatActivity
                 DocumentSnapshot document = task.getResult();
                 if (document.exists())
                 {
-                    lastBackupText.setText(String.valueOf(document.getData().get("last_scanned")));
-                    restoreBackupButton.setEnabled(true);
-                    restoreBackupButton.setBackgroundColor(Color.WHITE);
+                    if(document.getString("last_scanned") != null)
+                    {
+                        lastBackupText.setText(String.valueOf(Objects.requireNonNull(document.getData()).get("last_scanned")));
+                        restoreBackupButton.setEnabled(true);
+                        restoreBackupButton.setBackgroundColor(Color.WHITE);
+                    }
+
+                    else
+                        lastBackupText.setText(R.string.no_backups_created);
                 }
                 else
                     lastBackupText.setText(R.string.no_backups_created);
