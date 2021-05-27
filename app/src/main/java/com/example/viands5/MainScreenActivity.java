@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -37,9 +38,10 @@ public class MainScreenActivity extends AppCompatActivity
     private Button scanNewProductButton;
     private Button typeBarcodeButton;
 
-    MySQLiteDB mySQLiteDB = new MySQLiteDB(MainScreenActivity.this);
-    CustomLinearAdapter customLinearAdapter;
-    RecyclerView recyclerView;
+    private MySQLiteDB mySQLiteDB = new MySQLiteDB(MainScreenActivity.this);
+    private CustomLinearAdapter customLinearAdapter;
+    private RecyclerView recyclerView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

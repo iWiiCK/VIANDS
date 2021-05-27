@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -13,6 +12,8 @@ import java.util.ArrayList;
 
 public class MySQLiteDB extends SQLiteOpenHelper
 {
+    private Context context;
+
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "localDB.db";
 
@@ -47,6 +48,26 @@ public class MySQLiteDB extends SQLiteOpenHelper
     public MySQLiteDB(@Nullable Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
+    }
+
+    private void autoBackupIfEnabled()
+    {
+        try
+        {
+            FirestoreHandler firestoreHandler = new FirestoreHandler(context);
+            Cursor cursor = getUserPreferences(firestoreHandler.getUserID());
+            if(cursor != null && cursor.getInt(1) == 1)
+            {
+                firestoreHandler.backUpLocalStorage();
+            }
+        }
+
+        catch (Exception e)
+        {
+
+        }
+
     }
 
 
@@ -343,6 +364,10 @@ public class MySQLiteDB extends SQLiteOpenHelper
         cv.put(COLUMN_PRODUCT_IMAGE, product.getProductImage());
 
         db.insert(PRODUCTS_TABLE, null, cv);
+
+        addProductsToLists(product.getCode(), 0);
+
+        autoBackupIfEnabled();
     }
 
     public void updateProduct(Product updatedProduct)
@@ -358,12 +383,16 @@ public class MySQLiteDB extends SQLiteOpenHelper
         cv.put(COLUMN_PRODUCT_IMAGE, updatedProduct.getProductImage());
 
         db.update(PRODUCTS_TABLE, cv, COLUMN_CODE + "=?", new String[]{updatedProduct.getCode()});
+
+        autoBackupIfEnabled();
     }
 
     public void removeProduct(String barcode)
     {
         SQLiteDatabase db = this.getReadableDatabase();
         db.delete(PRODUCTS_TABLE, COLUMN_CODE + " =? ", new String[]{barcode});
+
+        autoBackupIfEnabled();
     }
 
     //Adding/Deleting a List to the database
@@ -376,6 +405,22 @@ public class MySQLiteDB extends SQLiteOpenHelper
         int count = cursor.getCount();
         cursor.close();
         return count;
+    }
+
+    public boolean listExists(int listId)
+    {
+        Cursor cursor  = readListsTableData();
+
+        if(cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                if(cursor.getInt(0) == listId)
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     public void updateList(int listId, @Nullable String newName, @Nullable String newDescription, int colour)
@@ -392,6 +437,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
         cv.put(COLUMN_LIST_COLOUR, colour);
 
         db.update(LISTS_TABLE, cv, COLUMN_ID + "=?", new String[]{Integer.toString(listId)});
+        autoBackupIfEnabled();
     }
 
 
@@ -407,6 +453,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
         cv.put(COLUMN_LIST_COLOUR, list.getListColour());
 
         db.insert(LISTS_TABLE, null, cv);
+        autoBackupIfEnabled();
     }
 
     public void deleteAllCustomLists()
@@ -414,6 +461,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
         SQLiteDatabase db = getWritableDatabase();
         db.delete(LISTS_TABLE, COLUMN_ID + "!=?", new String[]{Integer.toString(0)});
         db.delete(PRODUCTS_TO_LISTS_TABLE, COLUMN_LIST_ID + "!=?", new String[]{Integer.toString(0)});
+        autoBackupIfEnabled();
     }
 
     public void deleteList(String listID)
@@ -425,6 +473,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
         //Deleting the entry from products to lists table
         //Deleting a list will delete it's references in the products to list table as well
         db.execSQL("DELETE FROM " + PRODUCTS_TO_LISTS_TABLE + " WHERE " + COLUMN_LIST_ID + " =\"" + listID + "\" ;");
+
+        autoBackupIfEnabled();
     }
 
 
@@ -459,6 +509,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
         cv.put(COLUMN_LIST_ID, list.getId());
 
         db.insert(PRODUCTS_TO_LISTS_TABLE, null, cv);
+        autoBackupIfEnabled();
     }
 
     public void addProductsToLists(String productCode, int listId)
@@ -470,6 +521,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
         cv.put(COLUMN_LIST_ID, listId);
 
         db.insert(PRODUCTS_TO_LISTS_TABLE, null, cv);
+        autoBackupIfEnabled();
 
     }
 
@@ -482,6 +534,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
         cv.put(COLUMN_LIST_ID, Integer.parseInt(listId));
 
         db.insert(PRODUCTS_TO_LISTS_TABLE, null, cv);
+        autoBackupIfEnabled();
 
     }
 
@@ -489,15 +542,15 @@ public class MySQLiteDB extends SQLiteOpenHelper
     {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(PRODUCTS_TO_LISTS_TABLE, "product_code=? AND list_id=?", new String[]{productCode, Integer.toString(listId)});
+        autoBackupIfEnabled();
     }
 
     public void clearProductsFromList(int listId)
     {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(PRODUCTS_TO_LISTS_TABLE, "list_id=?", new String[]{Integer.toString(listId)});
+        autoBackupIfEnabled();
     }
-
-
 
 
     //Delete all table rows from all the tables.
@@ -508,8 +561,10 @@ public class MySQLiteDB extends SQLiteOpenHelper
     {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + PRODUCTS_TABLE);
-        db.delete(LISTS_TABLE, COLUMN_ID + "!=?", new String[]{Integer.toString(0)});
-        //db.execSQL("DELETE FROM " + LISTS_TABLE);
+        //db.delete(LISTS_TABLE, COLUMN_ID + "!=?", new String[]{Integer.toString(0)});
+        db.execSQL("DELETE FROM " + LISTS_TABLE);
         db.execSQL("DELETE FROM " + PRODUCTS_TO_LISTS_TABLE);
+
+        //autoBackupIfEnabled();
     }
 }

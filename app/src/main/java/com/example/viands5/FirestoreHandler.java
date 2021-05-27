@@ -8,8 +8,6 @@ import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -47,6 +45,10 @@ public class FirestoreHandler
         this.context = context;
         mySQLiteDB = new MySQLiteDB(this.context);
 
+    }
+
+    public String getUserID() {
+        return userID;
     }
 
     public void restoreBackup()
@@ -135,7 +137,12 @@ public class FirestoreHandler
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
         progressDialog.setIcon(R.drawable.backup_button_logo);
-        progressDialog.show();
+
+        Cursor cursor = mySQLiteDB.getUserPreferences(userID);
+        if(cursor != null && cursor.getInt(1) == 0)
+        {
+            progressDialog.show();
+        }
 
         Map<String, Object> data = new HashMap<>();
         data.put(LAST_BACKUP, backupTime);

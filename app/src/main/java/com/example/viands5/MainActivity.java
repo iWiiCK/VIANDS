@@ -7,11 +7,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
     MySQLiteDB mySQLiteDB;
+    private final String TAG = "Existing";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -23,8 +25,7 @@ public class MainActivity extends AppCompatActivity {
         //Create the Local SQLite database for Products, Lists and Products_toLists
         mySQLiteDB = new MySQLiteDB(this);
 
-        //This is adding the default list which is the recent products list
-        if(mySQLiteDB.readNumOfLists() == 0)
+        if(!mySQLiteDB.listExists(0))
             mySQLiteDB.addList(new List(0, "Recent Products", "This is a list of all the Recent Products Scanned By You", 0));
 
 
