@@ -5,20 +5,16 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -35,15 +31,11 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LoginScreen extends AppCompatActivity
 {
@@ -66,6 +58,8 @@ public class LoginScreen extends AppCompatActivity
 
     private TextView lastBackupText;
     private com.google.android.material.switchmaterial.SwitchMaterial autoBackupSwitch, rememberLoginSwitch;
+    private MySQLiteDB mySQLiteDB;
+    private String userID;
 
 
     @Override
@@ -85,6 +79,7 @@ public class LoginScreen extends AppCompatActivity
         lastBackupText = findViewById(R.id.lastBackupText);
         autoBackupSwitch = findViewById(R.id.autoBackupSwitch);
         rememberLoginSwitch = findViewById(R.id.rememberLoginSwitch);
+        mySQLiteDB = new MySQLiteDB(this);
 
 
         //Always disable the restore button till searching for a backup is done.
@@ -105,6 +100,7 @@ public class LoginScreen extends AppCompatActivity
 
         if(user != null)
         {
+            userID = user.getUid();
             displayAlreadyLoggedInScreen();
             firestoreHandler = new FirestoreHandler(this);
         }
@@ -131,6 +127,7 @@ public class LoginScreen extends AppCompatActivity
     {
         signInLayout.setVisibility(View.GONE);
         alreadySignedInLayout.setVisibility(View.VISIBLE);
+        handleUserPreferencesInteractions();
         displayUserData();
 
         signOutButton.setOnClickListener(v->
@@ -138,6 +135,73 @@ public class LoginScreen extends AppCompatActivity
             auth.signOut();
             displaySignInScreen();
 
+        });
+    }
+
+    private void handleUserPreferencesInteractions()
+    {
+        boolean enableAutoBackup = false;
+        boolean rememberLogin = false;
+        Cursor cursor =  mySQLiteDB.getUserPreferences(userID);
+
+        if(cursor != null)
+        {
+            if(cursor.getInt(1) == 1)
+                enableAutoBackup = true;
+
+            if(cursor.getInt(2) == 1)
+                rememberLogin = true;
+        }
+
+        autoBackupSwitch.setChecked(enableAutoBackup);
+        rememberLoginSwitch.setChecked(rememberLogin);
+
+        autoBackupSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if(isChecked)
+                {
+                    if (rememberLoginSwitch.isChecked())
+                        mySQLiteDB.updateUserPreferences(userID,1 , 1);
+                    else
+                        mySQLiteDB.updateUserPreferences(userID, 1, 0);
+                }
+
+                else
+                {
+                    if (rememberLoginSwitch.isChecked())
+                        mySQLiteDB.updateUserPreferences(userID,0 , 1);
+                    else
+                        mySQLiteDB.updateUserPreferences(userID, 0, 0);
+
+                }
+            }
+        });
+
+        rememberLoginSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if(isChecked)
+                {
+                    if (autoBackupSwitch.isChecked())
+                        mySQLiteDB.updateUserPreferences(userID,1 , 1);
+                    else
+                        mySQLiteDB.updateUserPreferences(userID, 0, 1);
+                }
+
+                else
+                {
+                    if (autoBackupSwitch.isChecked())
+                        mySQLiteDB.updateUserPreferences(userID,1 , 0);
+                    else
+                        mySQLiteDB.updateUserPreferences(userID, 0, 0);
+
+                }
+            }
         });
     }
 
@@ -191,6 +255,12 @@ public class LoginScreen extends AppCompatActivity
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             user = auth.getCurrentUser();
+
+                            if(!mySQLiteDB.userExists(user.getUid()))
+                            {
+                                mySQLiteDB.addUser(user.getUid(), 0, 0);
+                            }
+
                             recreate();
                         }
                         else

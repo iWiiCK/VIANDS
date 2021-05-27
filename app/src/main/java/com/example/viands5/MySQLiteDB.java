@@ -38,6 +38,12 @@ public class MySQLiteDB extends SQLiteOpenHelper
     public static final String COLUMN_PRODUCT_CODE =  "product_code";
     public static final String COLUMN_LIST_ID =  "list_id";
 
+    //User Preferences
+    public static final String USER_PREFERENCES_TABLE =  "user_preferences";
+    public static final String COLUMN_USER_ID =  "user_id";
+    public static final String COLUMN_ENABLE_AUTO_BACKUP =  "enable_auto_backup";
+    public static final String COLUMN_REMEMBER_LOGIN =  "remember_login";
+
     public MySQLiteDB(@Nullable Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -70,9 +76,17 @@ public class MySQLiteDB extends SQLiteOpenHelper
                 " PRIMARY KEY ( " + COLUMN_PRODUCT_CODE + ", " + COLUMN_LIST_ID + ")" +
                 ");";
 
+
+        String createUserPreferencesTableQuery = "CREATE TABLE " + USER_PREFERENCES_TABLE + "(" +
+                COLUMN_USER_ID + " TEXT PRIMARY KEY ," +
+                COLUMN_ENABLE_AUTO_BACKUP+ " INTEGER ," +
+                COLUMN_REMEMBER_LOGIN + " INTEGER " +
+                ");";
+
         db.execSQL(createProductsTableQuery);
         db.execSQL(createListsTableQuery);
         db.execSQL(createProductsToListsTableQuery);
+        db.execSQL(createUserPreferencesTableQuery);
     }
 
     @Override
@@ -81,9 +95,78 @@ public class MySQLiteDB extends SQLiteOpenHelper
         db.execSQL("DROP TABLE IF EXISTS " + PRODUCTS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + LISTS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + PRODUCTS_TO_LISTS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + USER_PREFERENCES_TABLE);
 
         onCreate(db);
     }
+
+    public void addUser(String userId, int enableAutoBackup, int rememberLogin)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(COLUMN_USER_ID, userId);
+        cv.put(COLUMN_ENABLE_AUTO_BACKUP, enableAutoBackup);
+        cv.put(COLUMN_REMEMBER_LOGIN, rememberLogin);
+
+        db.insert(USER_PREFERENCES_TABLE, null, cv);
+    }
+
+    //Return the preferences of a specific user
+    /////////////////////////////////////////////
+    public Cursor getUserPreferences(String userId)
+    {
+        Cursor cursor = readUserPreferencesTableData();
+
+        if(cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                if(cursor.getString(0).equals(userId))
+                    return cursor;
+            }
+
+            return cursor;
+        }
+
+        else
+            return cursor;
+
+    }
+
+    //This method checks if the user exists in the local database
+    ///////////////////////////////////////////////////////////////
+    public boolean userExists(String userID)
+    {
+        Cursor cursor = readUserPreferencesTableData();
+
+        if(cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                if(cursor.getString(0).equals(userID))
+                    return true;
+            }
+
+            return false;
+        }
+
+        else
+            return false;
+
+    }
+
+    public void updateUserPreferences(String userID, int enableAutoBackup, int rememberLogin)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(COLUMN_ENABLE_AUTO_BACKUP, enableAutoBackup);
+        cv.put(COLUMN_REMEMBER_LOGIN, rememberLogin);
+
+        db.update(USER_PREFERENCES_TABLE, cv, COLUMN_USER_ID + "=?", new String[]{userID});
+    }
+
 
     //Returns the number of products ina list when the list id is given
     /////////////////////////////////////////////////////////////////////
@@ -155,6 +238,22 @@ public class MySQLiteDB extends SQLiteOpenHelper
         return listIds;
     }
 
+    //This method reads all the data from the User Preferences Table
+    ////////////////////////////////////////////////////////
+    Cursor readUserPreferencesTableData()
+    {
+        String query = "SELECT * FROM " + USER_PREFERENCES_TABLE;
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = null;
+
+        if(db != null)
+        {
+            cursor = db.rawQuery(query, null);
+        }
+
+        return cursor;
+    }
 
     //This method reads all the data from the Products Table
     ////////////////////////////////////////////////////////
@@ -211,6 +310,25 @@ public class MySQLiteDB extends SQLiteOpenHelper
     //Adding a product to the database
     ////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    public boolean productAlreadySaved(String code)
+    {
+        Cursor cursor = readProductsTableData();
+
+        if(cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                if(cursor.getString(0).equals(code))
+                    return true;
+            }
+
+            return false;
+        }
+
+        else
+            return false;
+    }
+
     public void addProduct(Product product)
     {
         SQLiteDatabase db = getWritableDatabase();

@@ -160,8 +160,11 @@ public class DisplayingProductDetails extends AppCompatActivity
             saveOrChangeListButton.setOnClickListener(v ->
             {
                 selectListToAdd();
-                mySQLiteDB.addProduct(new Product(code, name, grade, novaGroup, ingredients, nutrients, byteProductImage));
-                mySQLiteDB.addProductsToLists(code, 0);//saving the product to the recent products List
+
+                if(!mySQLiteDB.productAlreadySaved(code)) {
+                    mySQLiteDB.addProduct(new Product(code, name, grade, novaGroup, ingredients, nutrients, byteProductImage));
+                    mySQLiteDB.addProductsToLists(code, 0);//saving the product to the recent products List
+                }
             });
         }
     }
