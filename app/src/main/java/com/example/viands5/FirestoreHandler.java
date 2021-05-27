@@ -5,9 +5,17 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -29,9 +37,11 @@ public class FirestoreHandler
     private final String LISTS_COLLECTION = "lists";
     private final String PRODUCTS_TO_LISTS_COLLECTION = "products_to_lists";
     private  String userID;
+    private String lastBackup = "You Haven't Created Any Backups";
 
     private Context context;
     private MySQLiteDB mySQLiteDB;
+
 
     public FirestoreHandler(Context context)
     {
@@ -42,10 +52,40 @@ public class FirestoreHandler
 
         this.context = context;
         mySQLiteDB = new MySQLiteDB(this.context);
+
+        DocumentReference docRef = firestore.collection(ROOT_COLLECTION).document(userID);
+        docRef.get().addOnCompleteListener(task ->
+        {
+            if (task.isSuccessful())
+            {
+                DocumentSnapshot document = task.getResult();
+                assert document != null;
+                if (document.exists())
+                    lastBackup = String.valueOf(document.getData().get("last_scanned"));
+                else
+                    lastBackup = "You Have Not Created Backups !";
+            }
+            else
+                Log.d(TAG, "get failed with ", task.getException());
+        });
     }
+
+    public String getLastBackup()
+    {
+        return lastBackup;
+    }
+
 
     public void restoreBackup()
     {
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle("Restoring Backup");
+        progressDialog.setMessage("We are Restoring your Data");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+        progressDialog.setIcon(R.drawable.restore_button_logo);
+        progressDialog.show();
+
         mySQLiteDB.factoryResetDatabase();
 
         firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
@@ -54,7 +94,7 @@ public class FirestoreHandler
                 {
                     if (task.isSuccessful())
                     {
-                        for (QueryDocumentSnapshot document : task.getResult())
+                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
                         {
                             mySQLiteDB.addProduct(new Product(
                                     document.getString("code"),
@@ -77,7 +117,7 @@ public class FirestoreHandler
                 {
                     if (task.isSuccessful())
                     {
-                        for (QueryDocumentSnapshot document : task.getResult())
+                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
                         {
                             mySQLiteDB.addList(new List(
                                     document.getString("id"),
@@ -97,7 +137,7 @@ public class FirestoreHandler
                 {
                     if (task.isSuccessful())
                     {
-                        for (QueryDocumentSnapshot document : task.getResult())
+                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
                         {
                             mySQLiteDB.addProductsToLists(
                                     document.getString("product_code"),
@@ -107,11 +147,15 @@ public class FirestoreHandler
                     }
                     else
                         Log.w(TAG, "Error getting documents.", task.getException());
+
+                    progressDialog.dismiss();
                 });
     }
 
     public void backUpLocalStorage()
     {
+        String backupTime = String.valueOf(Calendar.getInstance().getTime());
+
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setTitle("Creating Backup");
         progressDialog.setMessage("Your Backup will be Created Shortly");
@@ -122,9 +166,9 @@ public class FirestoreHandler
 
         Map<String, Object> data = new HashMap<>();
         data.put("user_name", user.getDisplayName());
-        data.put("last_scanned", Calendar.getInstance().getTime());
+        data.put("last_scanned", backupTime);
 
-        firestore.collection("users").document(user.getUid()).set(data);
+        firestore.collection(ROOT_COLLECTION).document(user.getUid()).set(data);
 
         //Clearing the Products
         /////////////////////////
@@ -134,7 +178,7 @@ public class FirestoreHandler
                 {
                     if (task.isSuccessful())
                     {
-                        for (QueryDocumentSnapshot document : task.getResult())
+                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
                         {
                             Log.d(TAG, document.getId() + " => " + document.getData().get("code"));
 
@@ -156,7 +200,7 @@ public class FirestoreHandler
                 {
                     if (task.isSuccessful())
                     {
-                        for (QueryDocumentSnapshot document : task.getResult())
+                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
                         {
                             Log.d(TAG, document.getId() + " => " + document.getData().get("code"));
 
@@ -178,20 +222,19 @@ public class FirestoreHandler
                 {
                     if (task.isSuccessful())
                     {
-                        for (QueryDocumentSnapshot document : task.getResult())
+                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
                         {
-                            Log.d(TAG, document.getId() + " => " + document.getData().get("code"));
-
                             firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
                                     .document(document.getId()).delete();
                         }
 
 
                         backupProductsToLists();
-                        progressDialog.dismiss();
                     }
                     else
                         Log.w(TAG, "Error getting documents.", task.getException());
+
+                    progressDialog.dismiss();
                 });
     }
 

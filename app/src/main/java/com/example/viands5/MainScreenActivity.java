@@ -67,7 +67,6 @@ public class MainScreenActivity extends AppCompatActivity
         {
             Intent i = new Intent(MainScreenActivity.this, ManageCustomListsActivity.class);
             startActivity(i);
-            //finish();
         });
 
 

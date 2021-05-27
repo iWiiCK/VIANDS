@@ -8,12 +8,16 @@ import androidx.cardview.widget.CardView;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -27,6 +31,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -54,9 +60,9 @@ public class LoginScreen extends AppCompatActivity
     private FirebaseFirestore firestore;
     private Button backupDataButton, restoreBackupButton;
 
-    private String userId;
     private FirestoreHandler firestoreHandler;
-    private MySQLiteDB mySQLiteDB;
+
+    private TextView lastBackupText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -72,9 +78,10 @@ public class LoginScreen extends AppCompatActivity
         signOutButton = findViewById(R.id.signOutButton);
         backupDataButton = findViewById(R.id.backupDataButton);
         restoreBackupButton = findViewById(R.id.restoreBackupButton);
-        mySQLiteDB = new MySQLiteDB(this);
-        firestoreHandler = new FirestoreHandler(this);
+        lastBackupText = findViewById(R.id.lastBackupText);
 
+        restoreBackupButton.setEnabled(false);
+        restoreBackupButton.setBackgroundColor(Color.GRAY);
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -89,10 +96,14 @@ public class LoginScreen extends AppCompatActivity
 
 
         if(user != null)
+        {
             displayAlreadyLoggedInScreen();
+            firestoreHandler = new FirestoreHandler(this);
+        }
 
         else
             displaySignInScreen();
+
 
     }
 
@@ -112,7 +123,6 @@ public class LoginScreen extends AppCompatActivity
     {
         signInLayout.setVisibility(View.GONE);
         alreadySignedInLayout.setVisibility(View.VISIBLE);
-
         displayUserData();
 
         signOutButton.setOnClickListener(v->
@@ -173,12 +183,8 @@ public class LoginScreen extends AppCompatActivity
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             user = auth.getCurrentUser();
-                            userId = auth.getCurrentUser().getUid();
-
                             assert user != null;
-                            displayUserData();
-                            signInLayout.setVisibility(View.GONE);
-                            alreadySignedInLayout.setVisibility(View.VISIBLE);
+                            recreate();
                         }
                         else
                         {
@@ -193,6 +199,27 @@ public class LoginScreen extends AppCompatActivity
     {
         Picasso.get().load(user.getPhotoUrl()).into(googleAccountImage);
         userName.setText(user.getDisplayName());
+
+        DocumentReference docRef = firestore.collection("users").document(user.getUid());
+        docRef.get().addOnCompleteListener(task ->
+        {
+            if (task.isSuccessful())
+            {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists())
+                {
+                    lastBackupText.setText(String.valueOf(document.getData().get("last_scanned")));
+                    restoreBackupButton.setEnabled(true);
+                    restoreBackupButton.setBackgroundColor(Color.WHITE);
+                }
+                else
+                    lastBackupText.setText(R.string.no_backups_created);
+            }
+            else
+            {
+                Log.d(TAG, "get failed with ", task.getException());
+            }
+        });
 
         backupDataButton.setOnClickListener(v->
         {
@@ -236,6 +263,13 @@ public class LoginScreen extends AppCompatActivity
         builder.setPositiveButton("YES", (dialog, which) ->
         {
             firestoreHandler.backUpLocalStorage();
+            lastBackupText.setText(String.valueOf(Calendar.getInstance().getTime()));
+
+            if(!restoreBackupButton.isEnabled())
+            {
+                restoreBackupButton.setEnabled(true);
+                restoreBackupButton.setBackgroundColor(Color.WHITE);
+            }
         });
 
         builder.setNegativeButton("NO", (dialog, which) -> {});

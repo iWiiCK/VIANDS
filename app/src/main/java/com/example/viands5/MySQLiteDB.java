@@ -73,10 +73,6 @@ public class MySQLiteDB extends SQLiteOpenHelper
         db.execSQL(createProductsTableQuery);
         db.execSQL(createListsTableQuery);
         db.execSQL(createProductsToListsTableQuery);
-
-        //This is adding the default list which is the recent products list
-        addList(new List(0, "Recent Products", "This is a list of all the Recent Products Scanned By You", 0));
-
     }
 
     @Override

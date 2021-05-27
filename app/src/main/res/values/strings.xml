@@ -86,4 +86,12 @@
     <string name="backup_data">Backup Data</string>
     <string name="restore_backup">Restore Backup</string>
     <string name="my_account">My Account</string>
+    <string name="last_backup">Last Backup</string>
+    <string name="may_27_2021_at_11_27_59_am_utc_530">May 27, 2021 at 11:27:59 AM UTC+530</string>
+    <string name="auto_backup">Auto Backup</string>
+    <string name="enable_auto_backups">Enable Auto Backups</string>
+    <string name="remember_user">Remember User</string>
+    <string name="remember_user_when_login_in">Remember User when Logging In</string>
+    <string name="loading_last_backup">...</string>
+    <string name="no_backups_created">You have Not Created Any Backups Yet !</string>
 </resources>
