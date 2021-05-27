@@ -253,8 +253,8 @@ public class FirestoreHandler
         {
             while (cursor.moveToNext())
             {
-                productsToLists.put("product_code", cursor.getInt(0));
-                productsToLists.put("list_id", String.valueOf(cursor.getInt(1)));
+                productsToLists.put("product_code", cursor.getString(0));
+                productsToLists.put("list_id", cursor.getString(1));
 
                 firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
                         .document(cursor.getString(0) +"_"+ cursor.getInt(1)).set(productsToLists);

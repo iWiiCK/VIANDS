@@ -30,6 +30,7 @@ public class CustomGridAdapter extends RecyclerView.Adapter<CustomGridAdapter.My
     private boolean clicked = false;
     private MySQLiteDB mySQLiteDB;
 
+
     public CustomGridAdapter(Activity activity, Context context, boolean isMoving, @Nullable String movingBarcode, ArrayList listId , ArrayList listName, ArrayList listDescription, ArrayList listColour, ArrayList numOfItemsInList) {
         this.activity = activity;
         this.context = context;
@@ -49,6 +50,10 @@ public class CustomGridAdapter extends RecyclerView.Adapter<CustomGridAdapter.My
         return listId;
     }
 
+    public ArrayList getListName() {
+        return listName;
+    }
+
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
@@ -63,7 +68,7 @@ public class CustomGridAdapter extends RecyclerView.Adapter<CustomGridAdapter.My
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position)
     {
-        holder.setIsRecyclable(false);
+        //holder.setIsRecyclable(false);
 
         switch ((int)listColour.get(position))
         {
@@ -167,6 +172,18 @@ public class CustomGridAdapter extends RecyclerView.Adapter<CustomGridAdapter.My
 
         builder.setNegativeButton("NO", (dialog, which) -> {});
         builder.create().show();
+    }
+
+    public void removeList(int position)
+    {
+        mySQLiteDB.deleteList(listId.get(position).toString());
+
+        listId.remove(position);
+        listName.remove(position);
+        listDescription.remove(position);
+        listColour.remove(position);
+
+        notifyDataSetChanged();
     }
 
     public void removeAllCustomLists()

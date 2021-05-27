@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -64,6 +65,10 @@ public class ManageCustomListsActivity extends AppCompatActivity
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.scrollToPosition(customGridAdapter.getItemCount());
 
+        //Adding a decorated divider to the recycler view items
+        DividerItemDecoration itemDecorator = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        itemDecorator.setDrawable(ContextCompat.getDrawable(this, R.drawable.recycler_view_divider));
+        recyclerView.addItemDecoration(itemDecorator);
 
         new ItemTouchHelper(itemTouchHelper).attachToRecyclerView(recyclerView);
 
@@ -143,9 +148,43 @@ public class ManageCustomListsActivity extends AppCompatActivity
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
         {
+            alertDeleteList((String)customGridAdapter.getListName().get(viewHolder.getAbsoluteAdapterPosition()), viewHolder.getLayoutPosition());
+        }
 
+        @Override
+        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    .addBackgroundColor(ContextCompat.getColor(ManageCustomListsActivity.this, R.color.swipe_bg_color))
+                    .addActionIcon(R.drawable.ic_baseline_delete_filled_24)
+                    .addSwipeRightLabel("DELETE")
+                    .setSwipeRightLabelColor(Color.WHITE)
+                    .create()
+                    .decorate();
+
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }
     };
+
+    private void alertDeleteList(String name, int position)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Remove List");
+        builder.setMessage("Are you sure you want to Remove " + name + " ?" );
+
+        builder.setPositiveButton("YES", (dialog, which) ->
+        {
+            customGridAdapter.removeList(position);
+
+        });
+
+        builder.setNegativeButton("NO", (dialog, which) ->
+        {
+            customGridAdapter.notifyItemChanged(position);
+        });
+
+        builder.setCancelable(true);
+        builder.create().show();
+    }
 
 
     private void displayDeleteAllOptions()

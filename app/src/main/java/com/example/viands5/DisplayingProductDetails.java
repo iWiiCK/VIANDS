@@ -3,6 +3,8 @@ package com.example.viands5;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -183,6 +185,11 @@ public class DisplayingProductDetails extends AppCompatActivity
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.scrollToPosition(customGridAdapter.getItemCount());
+
+        //Adding a decorated divider to the recycler view items
+        DividerItemDecoration itemDecorator = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        itemDecorator.setDrawable(ContextCompat.getDrawable(this, R.drawable.recycler_view_divider));
+        recyclerView.addItemDecoration(itemDecorator);
 
         if(customGridAdapter.getListId().size() < 1)
         {

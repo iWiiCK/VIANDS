@@ -32,4 +32,5 @@
     <color name="list_colour_green">#71E86D</color>
     <color name="list_colour_yellow">#FEFE6E</color>
     <color name="list_colour_purple">#AD93F3</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>

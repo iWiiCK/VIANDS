@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="150dp"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:dividerPadding="20dp"
+    android:orientation="vertical"
+    app:flow_verticalStyle="spread">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/singleListItem"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
         app:cardBackgroundColor="#707070"
         app:cardCornerRadius="10dp">
 
