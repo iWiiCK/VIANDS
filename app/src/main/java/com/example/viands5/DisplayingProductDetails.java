@@ -15,7 +15,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
@@ -37,39 +36,32 @@ import com.squareup.picasso.Target;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-
-import static com.example.viands5.R.drawable.default_food_img;
+import java.util.Objects;
 
 public class DisplayingProductDetails extends AppCompatActivity
 {
     private MySQLiteDB mySQLiteDB;
     private boolean loadedFromList = false;
-    private Button saveOrChangeListButton, cancelButton;
+    private Button saveOrChangeListButton;
     private int listId;
     private String code;
 
-    String name, grade, ingredients, nutrients ;
-    int novaGroup, gradeDrawable, novaGroupDrawable;
-    byte[] byteProductImage = null;
-    boolean refreshedProduct = false;
+    private String name, grade, ingredients, nutrients ;
+    private int novaGroup, gradeDrawable, novaGroupDrawable;
+    private byte[] byteProductImage = null;
+    private boolean refreshedProduct = false;
 
     private ArrayList<String> listName, listDescription, numOfItemsInList;
     private ArrayList<Integer> listIds, listColour;
 
-    TextView productNameInDetails, ingredientsInDetails, nutrientsInDetails;
-    TextView listNamePlaintext, listDescriptionPlainText, offlineDataMessage;
-    ImageView nutritionalValueImage, novaGroupImage, productPlaceHolderImage;
+    private TextView productNameInDetails, ingredientsInDetails, nutrientsInDetails;
+    private TextView listNamePlaintext;
+    private TextView listDescriptionPlainText;
+    private ImageView nutritionalValueImage, novaGroupImage, productPlaceHolderImage;
 
     private CardView hiddenLayout, hiddenNewListLayout, hiddenEmptyListLogo;
-    private CustomGridAdapter customGridAdapter;
-    private RecyclerView recyclerView;
     private ImageButton hideButton;
     private Button cancelCreatingListButton, saveAndAddButton;
     private FloatingActionButton addNewListButton;
@@ -89,7 +81,7 @@ public class DisplayingProductDetails extends AppCompatActivity
         novaGroupImage = findViewById(R.id.novaGroupImage);
         saveOrChangeListButton = findViewById(R.id.saveOrChangeListButton);
         productPlaceHolderImage = findViewById(R.id.productPlaceHolderImage);
-        offlineDataMessage = findViewById(R.id.offlineDataMessage);
+        TextView offlineDataMessage = findViewById(R.id.offlineDataMessage);
 
         hiddenLayout = findViewById(R.id.hiddenListsLayout);
         hideButton = findViewById(R.id.hideButton);
@@ -109,10 +101,9 @@ public class DisplayingProductDetails extends AppCompatActivity
             refreshedProduct = extras.getBoolean("PRODUCT_REFRESHED");
         }
 
-        cancelButton = findViewById(R.id.cancelButton);
+        Button cancelButton = findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(v ->
         {
-            //finish();
             Intent returnIntent = new Intent();
             returnIntent.putExtra("REFRESH",true);
             setResult(RESULT_OK,returnIntent);
@@ -133,6 +124,7 @@ public class DisplayingProductDetails extends AppCompatActivity
             if(!refreshedProduct)
             {
                 offlineDataMessage.setVisibility(View.VISIBLE);
+                assert extras != null;
                 displayProductFromList(extras);
 
                 changeButton();
@@ -173,11 +165,13 @@ public class DisplayingProductDetails extends AppCompatActivity
         }
     }
 
+    //Select a list to add the new porduct
+    //////////////////////////////////////////
     private void selectListToAdd()
     {
         hiddenLayout.setVisibility(View.VISIBLE);
         loadDataFromDB();
-        customGridAdapter = new CustomGridAdapter(DisplayingProductDetails.this,
+        CustomGridAdapter customGridAdapter = new CustomGridAdapter(DisplayingProductDetails.this,
                 this,
                 true,
                 code,
@@ -187,7 +181,7 @@ public class DisplayingProductDetails extends AppCompatActivity
                 listColour,
                 numOfItemsInList);
 
-        recyclerView = findViewById(R.id.recyclerViewGridOfLists);
+        RecyclerView recyclerView = findViewById(R.id.recyclerViewGridOfLists);
         recyclerView.setAdapter(customGridAdapter);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -195,7 +189,7 @@ public class DisplayingProductDetails extends AppCompatActivity
 
         //Adding a decorated divider to the recycler view items
         DividerItemDecoration itemDecorator = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        itemDecorator.setDrawable(ContextCompat.getDrawable(this, R.drawable.recycler_view_divider));
+        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.recycler_view_divider)));
         recyclerView.addItemDecoration(itemDecorator);
 
         if(customGridAdapter.getListId().size() < 1)
@@ -211,6 +205,8 @@ public class DisplayingProductDetails extends AppCompatActivity
 
     }
 
+    //Create and add new product to a new list
+    //////////////////////////////////////////////
     private void createNewListAndAdd()
     {
         hiddenNewListLayout.setVisibility(View.VISIBLE);
@@ -241,6 +237,8 @@ public class DisplayingProductDetails extends AppCompatActivity
         });
     }
 
+    //Loading the lists from the database
+    ///////////////////////////////////////
     private void loadDataFromDB()
     {
         int index = 1;
@@ -277,6 +275,8 @@ public class DisplayingProductDetails extends AppCompatActivity
         Collections.reverse(numOfItemsInList);
     }
 
+    //Change the button styles when displaying local and fetched data
+    ///////////////////////////////////////////////////////////////////
     private void changeButton()
     {
         saveOrChangeListButton.setText(R.string.change_list_label);
@@ -291,6 +291,8 @@ public class DisplayingProductDetails extends AppCompatActivity
         finish();
     }
 
+    //Display details of the product when being displayed from the local database
+    /////////////////////////////////////////////////////////////////////////////////
     private void displayProductFromList(Bundle extras)
     {
         listId = extras.getInt("LIST_ID");
@@ -318,6 +320,8 @@ public class DisplayingProductDetails extends AppCompatActivity
         }
     }
 
+    //Displaying details of a product from the api
+    ///////////////////////////////////////////////////
     private void displayProductFromTheApi(Bundle extras)
     {
         try
@@ -393,9 +397,11 @@ public class DisplayingProductDetails extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    //Refreshing product details
+    /////////////////////////////////
     private void refreshProduct(String barcode)
     {
-        Intent i = new Intent(DisplayingProductDetails.this, SearchingTheDatabse.class);
+        Intent i = new Intent(DisplayingProductDetails.this, SearchingTheDatabase.class);
         i.putExtra("PRODUCT_BARCODE", barcode);
         i.putExtra("PRODUCT_REFRESHED", true);
         startActivity(i);
@@ -403,6 +409,7 @@ public class DisplayingProductDetails extends AppCompatActivity
     }
 
     //Force Hiding the Keyboard
+    ////////////////////////////////
     public static void forceHideKeyboard(@NonNull Activity activity, @NonNull TextView editText) {
         if (activity.getCurrentFocus() == null || !(activity.getCurrentFocus() instanceof EditText)) {
             editText.requestFocus();

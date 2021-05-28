@@ -1,17 +1,11 @@
 package com.example.viands5;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 public class TypeBarcode extends AppCompatActivity
@@ -60,7 +54,7 @@ public class TypeBarcode extends AppCompatActivity
 
     private void searchProduct(String barcode)
     {
-        Intent i = new Intent(TypeBarcode.this, SearchingTheDatabse.class);
+        Intent i = new Intent(TypeBarcode.this, SearchingTheDatabase.class);
         i.putExtra("PRODUCT_BARCODE", barcode);
         startActivity(i);
     }

@@ -3,7 +3,6 @@ package com.example.viands5;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -18,20 +17,28 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class CustomGridAdapter extends RecyclerView.Adapter<CustomGridAdapter.MyViewHolder>
 {
-    private Activity activity;
-    private Context context;
-    private ArrayList listId, listName, listDescription, numOfItemsInList, listColour, listIdsWithTheProductInIt;
-    private boolean isMoving;
-    String movingBarcode = null;
-    private boolean clicked = false;
-    private MySQLiteDB mySQLiteDB;
+    private final Activity activity;
+    private final Context context;
+    private final ArrayList<Integer> listId;
+    private final ArrayList<Integer> listColour;
+    private final ArrayList<Integer> listIdsWithTheProductInIt;
+    private final ArrayList<String> listName;
+    private final ArrayList<String> listDescription;
+    private final ArrayList<String> numOfItemsInList;
+    private final boolean isMoving;
+    String movingBarcode;
+    private final MySQLiteDB mySQLiteDB;
 
 
-    public CustomGridAdapter(Activity activity, Context context, boolean isMoving, @Nullable String movingBarcode, ArrayList listId , ArrayList listName, ArrayList listDescription, ArrayList listColour, ArrayList numOfItemsInList) {
+    public CustomGridAdapter(Activity activity, Context context, boolean isMoving, @Nullable String movingBarcode,
+                             ArrayList<Integer> listId ,
+                             ArrayList<String> listName,
+                             ArrayList<String> listDescription,
+                             ArrayList<Integer> listColour,
+                             ArrayList<String> numOfItemsInList) {
         this.activity = activity;
         this.context = context;
         this.isMoving = isMoving;
@@ -46,11 +53,11 @@ public class CustomGridAdapter extends RecyclerView.Adapter<CustomGridAdapter.My
         listIdsWithTheProductInIt = mySQLiteDB.readListsWithTheSameBarcode(movingBarcode);
     }
 
-    public ArrayList getListId() {
+    public ArrayList<Integer> getListId() {
         return listId;
     }
 
-    public ArrayList getListName() {
+    public ArrayList<String> getListName() {
         return listName;
     }
 
@@ -62,14 +69,13 @@ public class CustomGridAdapter extends RecyclerView.Adapter<CustomGridAdapter.My
         View view = inflater.inflate(R.layout.recycler_view_grid_item, parent, false);
 
 
-        return new CustomGridAdapter.MyViewHolder(view);
+        return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position)
     {
-        //holder.setIsRecyclable(false);
-
+        //Setting the List colour in each List item
         switch ((int)listColour.get(position))
         {
             case 1:
@@ -103,7 +109,7 @@ public class CustomGridAdapter extends RecyclerView.Adapter<CustomGridAdapter.My
         //Finding lists with the product already in it
         for (int i = 0; i < listIdsWithTheProductInIt.size(); i++)
         {
-            if (listId.get(position) == listIdsWithTheProductInIt.get(i))
+            if (listId.get(position).equals(listIdsWithTheProductInIt.get(i)))
             {
                 holder.cardTop.setBackgroundColor(Color.GRAY);
                 holder.numOfItemsInList.setText(R.string.product_exists);
@@ -137,7 +143,7 @@ public class CustomGridAdapter extends RecyclerView.Adapter<CustomGridAdapter.My
         return listName.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder
+    public static class MyViewHolder extends RecyclerView.ViewHolder
     {
         TextView listName, numOfItemsInList;
         CardView cardTop, singleListItem;
@@ -153,6 +159,8 @@ public class CustomGridAdapter extends RecyclerView.Adapter<CustomGridAdapter.My
         }
     }
 
+    //Getting the confirmation before moving a product
+    ////////////////////////////////////////////////////////////////////////////////////
     private void getConfirmation(MyViewHolder holder, String listName, int position)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -174,6 +182,8 @@ public class CustomGridAdapter extends RecyclerView.Adapter<CustomGridAdapter.My
         builder.create().show();
     }
 
+    //Removing a list by taking the list position
+    //////////////////////////////////////////////////
     public void removeList(int position)
     {
         mySQLiteDB.deleteList(listId.get(position).toString());
@@ -186,6 +196,8 @@ public class CustomGridAdapter extends RecyclerView.Adapter<CustomGridAdapter.My
         notifyDataSetChanged();
     }
 
+    //Removing all custom lists from the database
+    ////////////////////////////////////////////////
     public void removeAllCustomLists()
     {
         mySQLiteDB.deleteAllCustomLists();

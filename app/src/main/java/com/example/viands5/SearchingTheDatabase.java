@@ -3,13 +3,12 @@ package com.example.viands5;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SearchingTheDatabse extends AppCompatActivity
+public class SearchingTheDatabase extends AppCompatActivity
 {
     TextView nameLabel, descriptionText;
     Button viewResultsButton;
@@ -53,7 +52,7 @@ public class SearchingTheDatabse extends AppCompatActivity
 
     private void displayProductDetails()
     {
-        Intent i = new Intent(SearchingTheDatabse.this, DisplayingProductDetails.class);
+        Intent i = new Intent(SearchingTheDatabase.this, DisplayingProductDetails.class);
         i.putExtra("API_CODE", apiHandler.getBarcode());
         i.putExtra("API_NAME", apiHandler.getName());
         i.putExtra("API_GRADE", apiHandler.getGrade());

@@ -12,9 +12,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MySQLiteDB extends SQLiteOpenHelper
 {
+    //The variables need for the auto backup system
+    //////////////////////////////////////////////
     private Context context;
     private FirebaseAuth auth;
     private FirebaseUser user;
@@ -23,6 +26,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
     private static final String DATABASE_NAME = "localDB.db";
 
     //Products Table
+    //////////////////
     public static final String PRODUCTS_TABLE =  "products";
     public static final String COLUMN_CODE =  "code";
     public static final String COLUMN_PRODUCT_NAME =  "name";
@@ -33,6 +37,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
     public static final String COLUMN_PRODUCT_IMAGE=  "product_image";
 
     //Lists Table
+    ////////////////
     public static final String LISTS_TABLE =  "lists";
     public static final String COLUMN_ID =  "id";
     public static final String COLUMN_LIST_NAME =  "name";
@@ -40,22 +45,30 @@ public class MySQLiteDB extends SQLiteOpenHelper
     public static final String COLUMN_LIST_COLOUR =  "colour";
 
     //Products_to_list Table
+    ///////////////////////////
     public static final String PRODUCTS_TO_LISTS_TABLE =  "products_to_lists";
     public static final String COLUMN_PRODUCT_CODE =  "product_code";
     public static final String COLUMN_LIST_ID =  "list_id";
 
     //User Preferences
+    /////////////////////
     public static final String USER_PREFERENCES_TABLE =  "user_preferences";
     public static final String COLUMN_USER_ID =  "user_id";
     public static final String COLUMN_ENABLE_AUTO_BACKUP =  "enable_auto_backup";
     public static final String COLUMN_REMEMBER_LOGIN =  "remember_login";
 
+    //The default constructor for the class
+    /////////////////////////////////////////
     public MySQLiteDB(@Nullable Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
     }
 
+    /*This method checks the user preferences and if the currently logged in user has selected the
+    * auto backup option, the database will be uploaded to firestore when the user interacts with the
+    * SQLite db*/
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     private void autoBackupIfEnabled()
     {
         //Firebase Google authentication
@@ -67,9 +80,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
             FirestoreHandler firestoreHandler = new FirestoreHandler(context);
             Cursor cursor = getUserPreferences(firestoreHandler.getUserID());
             if(cursor != null && cursor.getInt(1) == 1)
-            {
                 firestoreHandler.backUpLocalStorage();
-            }
         }
     }
 
@@ -124,6 +135,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
         onCreate(db);
     }
 
+    /*This method will create a new user in the local database as to store there application
+    * preferences*/
+    //////////////////////////////////////////////////////////////////////////////////////////
     public void addUser(String userId, int enableAutoBackup, int rememberLogin)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -150,11 +164,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
                     return cursor;
             }
 
-            return cursor;
         }
-
-        else
-            return cursor;
+        return cursor;
 
     }
 
@@ -172,14 +183,13 @@ public class MySQLiteDB extends SQLiteOpenHelper
                     return true;
             }
 
-            return false;
         }
-
-        else
-            return false;
+        return false;
 
     }
 
+    /*This method updated the user preferences as the user selects them
+    * ///////////////////////////////////////////////////////////////////////*/
     public void updateUserPreferences(String userID, int enableAutoBackup, int rememberLogin)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -203,24 +213,22 @@ public class MySQLiteDB extends SQLiteOpenHelper
         Cursor cursor = null;
 
         if(db != null)
-        {
             cursor = db.rawQuery(query, null);
-        }
 
-        if(cursor.getCount() != 0)
-        {
-            while (cursor.moveToNext())
-            {
+        if (cursor != null && cursor.getCount() != 0) {
+            while (cursor.moveToNext()) {
                 count++;
             }
         }
+
+        Objects.requireNonNull(cursor).close();
 
         return count;
     }
 
     //Returns an ArrayList with the barcodes when a list Index is given
     ////////////////////////////////////////////////////////////////////
-    ArrayList readBarcodeInList(int listID)
+    ArrayList<String> readBarcodeInList(int listID)
     {
         ArrayList<String> barcodeInList = new ArrayList<>();
         String query = "SELECT " + COLUMN_PRODUCT_CODE + " FROM " + PRODUCTS_TO_LISTS_TABLE + " WHERE " + COLUMN_LIST_ID + " = " + listID;
@@ -229,19 +237,22 @@ public class MySQLiteDB extends SQLiteOpenHelper
         Cursor cursor = null;
 
         if(db != null)
-        {
             cursor = db.rawQuery(query, null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext())
+                barcodeInList.add(cursor.getString(0));
         }
 
-        while (cursor.moveToNext())
-        {
-            barcodeInList.add(cursor.getString(0));
-        }
+        Objects.requireNonNull(cursor).close();
 
         return barcodeInList;
     }
 
-    ArrayList readListsWithTheSameBarcode(String barcode)
+    /*This methods check the lists with the same product when moving coping products to different lists.
+    * So that the same product will not be added to the same list twice
+    * ////////////////////////////////////////////////////////////////////////////////////////////////////*/
+    ArrayList<Integer> readListsWithTheSameBarcode(String barcode)
     {
         ArrayList<Integer> listIds = new ArrayList<>();
         String query = "SELECT " + COLUMN_LIST_ID + " FROM " + PRODUCTS_TO_LISTS_TABLE + " WHERE " + COLUMN_PRODUCT_CODE + " = \"" + barcode + "\";";
@@ -250,14 +261,14 @@ public class MySQLiteDB extends SQLiteOpenHelper
         Cursor cursor = null;
 
         if(db != null)
-        {
             cursor = db.rawQuery(query, null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext())
+                listIds.add(cursor.getInt(0));
         }
 
-        while (cursor.moveToNext())
-        {
-            listIds.add(cursor.getInt(0));
-        }
+        Objects.requireNonNull(cursor).close();
 
         return listIds;
     }
@@ -296,6 +307,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
         return cursor;
     }
 
+    /*Checks whether the default list which is the recent product lists exists
+    * ///////////////////////////////////////////////////////////////////////////*/
     public boolean defaultListExists()
     {
         Cursor cursor  = readListsTableData();
@@ -347,8 +360,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
         return cursor;
     }
 
-    //Adding a product to the database
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //This method checks whether the product exists in the database beofre adding it
     ////////////////////////////////////////////////////////////////////////////////////////////////
     public boolean productAlreadySaved(String code)
     {
@@ -362,13 +374,12 @@ public class MySQLiteDB extends SQLiteOpenHelper
                     return true;
             }
 
-            return false;
         }
-
-        else
-            return false;
+        return false;
     }
 
+    //Adding a product to the database by taking a product object as the parameter
+    //////////////////////////////////////////////////////////////////////////////////
     public void addProduct(Product product)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -389,6 +400,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
         autoBackupIfEnabled();
     }
 
+    //Update product in the database if the user clicks the refresh option
+    /////////////////////////////////////////////////////////////////////////
     public void updateProduct(Product updatedProduct)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -406,6 +419,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
         autoBackupIfEnabled();
     }
 
+    //This methods removes a product from the database by taking the barcode as a parameter
+    ///////////////////////////////////////////////////////////////////////////////////////
     public void removeProduct(String barcode)
     {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -416,7 +431,6 @@ public class MySQLiteDB extends SQLiteOpenHelper
 
     //Adding/Deleting a List to the database
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////
     public int readNumOfLists() {
         String query = "SELECT  * FROM " + LISTS_TABLE;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -426,22 +440,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
         return count;
     }
 
-    public boolean listExists(int listId)
-    {
-        Cursor cursor  = readListsTableData();
 
-        if(cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                if(cursor.getInt(0) == listId)
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
+    //This method updates the details in a list (name, colour, description)
+    //////////////////////////////////////////////////////////////////////////
     public void updateList(int listId, @Nullable String newName, @Nullable String newDescription, int colour)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -460,6 +461,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
     }
 
 
+    //This method will add a list to the database
+    /////////////////////////////////////////////////
     public void addList(List list)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -475,6 +478,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
         autoBackupIfEnabled();
     }
 
+    //This method will delete all the lists as a batch
+    ///////////////////////////////////////////////////////
     public void deleteAllCustomLists()
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -483,6 +488,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
         autoBackupIfEnabled();
     }
 
+    //This method will delete a single list by taking the listID
+    ///////////////////////////////////////////////////////////////
     public void deleteList(String listID)
     {
         //Deleting the list from the lists table
@@ -496,9 +503,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
         autoBackupIfEnabled();
     }
 
-
-    //Adding/Delete a product to  List
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //This method returns the number of same rpoducts in diffrent lists
+    //if the return value is 0, the product will also be deleted from the database
     ////////////////////////////////////////////////////////////////////////////////////////////////
     public int numOfSameProductsInDifferentLists(String barcode)
     {
@@ -519,6 +525,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
         return count;
     }
 
+    //This method will map a product to its list taking a product object and a list object as the parameter
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
     public void addProductsToLists(Product product, List list)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -531,6 +539,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
         autoBackupIfEnabled();
     }
 
+    //This method will too map a product to the database taking a String and an int as parameters
+    ////////////////////////////////////////////////////////////////////////////////////////////
     public void addProductsToLists(String productCode, int listId)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -544,6 +554,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
 
     }
 
+    //This method will too map a product to the database taking two strings as parameters
+    ////////////////////////////////////////////////////////////////////////////////////////////
     public void addProductsToLists(String productCode, String listId)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -557,6 +569,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
 
     }
 
+    //This method removes the mapping of a product from it's list
+    /////////////////////////////////////////////////////////////////
     public void deleteProductFromList(String productCode, int listId)
     {
         SQLiteDatabase db = getWritableDatabase();
@@ -564,7 +578,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
         autoBackupIfEnabled();
     }
 
-    public void clearProductsFromList(int listId)
+    //This method clears all products from the list
+    /////////////////////////////////////////////////////
+    public void clearAllProductsFromList(int listId)
     {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(PRODUCTS_TO_LISTS_TABLE, "list_id=?", new String[]{Integer.toString(listId)});
@@ -572,10 +588,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
     }
 
 
+    //ONLY USED FOR TESTING PURPOSES
     //Delete all table rows from all the tables.
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
     public void factoryResetDatabase()
     {
         SQLiteDatabase db = getWritableDatabase();

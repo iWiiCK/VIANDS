@@ -25,23 +25,22 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-
+/**
+ * When the user clicks on a list, displaying the content of that particular list and deleting items from that
+ * list will be handled by this class
+ */
 public class ClickedList extends AppCompatActivity
 {
-    private String movingProductBarcode = "";
-
     private int listId, listColour;
-    private String listName, listDescription;
-    private MySQLiteDB mySQLiteDB = new MySQLiteDB(ClickedList.this);
+    private String listName;
+    private final MySQLiteDB mySQLiteDB = new MySQLiteDB(ClickedList.this);
     private CustomLinearAdapter customLinearAdapter;
-    private RecyclerView recyclerView;
     private TextView listDescriptionLabel;
 
     private CardView hiddenEditMenu;
@@ -49,7 +48,6 @@ public class ClickedList extends AppCompatActivity
     private Button cancelEditingButton, saveChangesButton;
     private RadioGroup listColourRadioGroup;
     private RadioButton cyanRadioButton, purpleRadioButton, pinkRadioButton, redRadioButton, greenRadioButton, yellowRadioButton;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -87,7 +85,8 @@ public class ClickedList extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         super.onBackPressed();
         finish();
     }
@@ -95,14 +94,12 @@ public class ClickedList extends AppCompatActivity
     private void createList()
     {
         listDescriptionLabel = findViewById(R.id.listDescriptionLabel);
-
         Bundle extras = getIntent().getExtras();
 
         listId = extras.getInt("LIST_ID");
         listName = extras.getString("LIST_NAME");
-        listDescription = extras.getString("LIST_DESCRIPTION");
+        String listDescription = extras.getString("LIST_DESCRIPTION");
         listColour = extras.getInt("LIST_COLOUR");
-
 
         listDescriptionLabel.setText(listDescription);
     }
@@ -114,7 +111,6 @@ public class ClickedList extends AppCompatActivity
     {
         ProductsInListHandler productInList = new ProductsInListHandler(listId);
         productInList.loadList(mySQLiteDB);
-
 
         //Populating the Recycler View
         ///////////////////////////////////////////////////////////////////////////////////////////
@@ -129,7 +125,7 @@ public class ClickedList extends AppCompatActivity
                 productInList.getNutrients(),
                 productInList.getProductImage());
 
-        recyclerView = findViewById(R.id.clickedListRecyclerView);
+        RecyclerView recyclerView = findViewById(R.id.clickedListRecyclerView);
         recyclerView.setAdapter(customLinearAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ClickedList.this);
         linearLayoutManager.setStackFromEnd(true);
@@ -139,10 +135,13 @@ public class ClickedList extends AppCompatActivity
 
     }
 
+    //Swipe decorations for the recycler view
+    ////////////////////////////////////////////
     ItemTouchHelper.SimpleCallback itemTouchHelper = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT)
     {
         @Override
-        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target)
+        {
             return false;
         }
 
@@ -153,7 +152,6 @@ public class ClickedList extends AppCompatActivity
             alertDeleteProductFromList(
                     (String)customLinearAdapter.getName().get(viewHolder.getAbsoluteAdapterPosition()), viewHolder.getAbsoluteAdapterPosition());
         }
-
 
         @Override
         public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive)
@@ -186,17 +184,17 @@ public class ClickedList extends AppCompatActivity
         if(item.getItemId() == R.id.delete_button)
         {
             if(customLinearAdapter.getBarcode().size() > 0)
-                displayDeleteAllOptions();
+                displayDeleteAllOptionsAlert();
         }
 
         else if(item.getItemId() == R.id.edit_button)
-        {
             displayEditOptions();
-        }
 
         return super.onOptionsItemSelected(item);
     }
 
+    //Displaying and controlling the edit options of the list.
+    /////////////////////////////////////////////////////////////
     private void displayEditOptions()
     {
         ActionBar ab = getSupportActionBar();
@@ -318,16 +316,16 @@ public class ClickedList extends AppCompatActivity
         });
     }
 
-    private void displayDeleteAllOptions()
+    //Displaying the alert dialog for displaying when deleting all products
+    ////////////////////////////////////////////////////////////////////////
+    private void displayDeleteAllOptionsAlert()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Clear List?");
         builder.setMessage("Are you sure you want to Clear all the data in " + listName + " ?" );
 
         builder.setPositiveButton("YES", (dialog, which) ->
-        {
-            customLinearAdapter.clearAllProducts();
-        });
+                customLinearAdapter.clearAllProducts());
 
         builder.setNegativeButton("NO", (dialog, which) -> {});
 
@@ -336,6 +334,8 @@ public class ClickedList extends AppCompatActivity
     }
 
 
+    //Displaying the alert dialog when deleting individual products from the list
+    ///////////////////////////////////////////////////////////////////////////////
     private void alertDeleteProductFromList(String name, int position)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -343,21 +343,17 @@ public class ClickedList extends AppCompatActivity
         builder.setMessage("Are you sure you want to Remove " + name + " from " + listName + " ?" );
 
         builder.setPositiveButton("YES", (dialog, which) ->
-        {
-            customLinearAdapter.removeProduct(position);
-
-        });
+                customLinearAdapter.removeProduct(position));
 
         builder.setNegativeButton("NO", (dialog, which) ->
-        {
-            customLinearAdapter.notifyItemChanged(position);
-        });
+                customLinearAdapter.notifyItemChanged(position));
 
         builder.setCancelable(true);
         builder.create().show();
     }
 
     //Force Hiding the Keyboard
+    /////////////////////////////////////////
     public static void forceHideKeyboard(@NonNull Activity activity, @NonNull TextView editText) {
         if (activity.getCurrentFocus() == null || !(activity.getCurrentFocus() instanceof EditText)) {
             editText.requestFocus();

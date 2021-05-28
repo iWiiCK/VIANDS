@@ -1,18 +1,12 @@
 package com.example.viands5;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -169,7 +163,7 @@ public class MainScreenActivity extends AppCompatActivity
         {
             if(result.getContents() != null)
             {
-                Intent i = new Intent(MainScreenActivity.this, SearchingTheDatabse.class);
+                Intent i = new Intent(MainScreenActivity.this, SearchingTheDatabase.class);
                 i.putExtra("PRODUCT_BARCODE", result.getContents());
                 startActivity(i);
             }

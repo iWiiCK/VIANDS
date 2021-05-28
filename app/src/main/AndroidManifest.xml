@@ -23,7 +23,7 @@
             android:screenOrientation="portrait"
             />
         <activity
-            android:name=".SearchingTheDatabse"
+            android:name=".SearchingTheDatabase"
             android:parentActivityName=".MainScreenActivity"
             android:screenOrientation="portrait" />
         <activity
