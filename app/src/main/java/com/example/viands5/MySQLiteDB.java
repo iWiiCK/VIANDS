@@ -8,11 +8,16 @@ import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.Nullable;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 
 public class MySQLiteDB extends SQLiteOpenHelper
 {
     private Context context;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "localDB.db";
@@ -53,7 +58,11 @@ public class MySQLiteDB extends SQLiteOpenHelper
 
     private void autoBackupIfEnabled()
     {
-        try
+        //Firebase Google authentication
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
+        if(user != null)
         {
             FirestoreHandler firestoreHandler = new FirestoreHandler(context);
             Cursor cursor = getUserPreferences(firestoreHandler.getUserID());
@@ -62,12 +71,6 @@ public class MySQLiteDB extends SQLiteOpenHelper
                 firestoreHandler.backUpLocalStorage();
             }
         }
-
-        catch (Exception e)
-        {
-
-        }
-
     }
 
 
