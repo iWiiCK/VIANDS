@@ -105,7 +105,6 @@ public class MainScreenActivity extends AppCompatActivity
         });
     }
 
-
     //Giving a prompt message when the user back presses in the main screen
     ////////////////////////////////////////////////////////
     @Override
@@ -153,6 +152,12 @@ public class MainScreenActivity extends AppCompatActivity
         recyclerView.setLayoutManager(linearLayoutManager);
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        recreate();
+    }
+
     // Get the results of a barcode Scan:
     //////////////////////////////////////
     @Override
@@ -160,14 +165,10 @@ public class MainScreenActivity extends AppCompatActivity
     {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
-        if(requestCode ==1)
-            recreate();
-
         if(result != null)
         {
             if(result.getContents() != null)
             {
-                recreate();
                 Intent i = new Intent(MainScreenActivity.this, SearchingTheDatabse.class);
                 i.putExtra("PRODUCT_BARCODE", result.getContents());
                 startActivity(i);

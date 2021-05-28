@@ -54,10 +54,12 @@ public class CreateNewList extends AppCompatActivity
                 int index = listColourRadioGroup.indexOfChild(findViewById(listColourRadioGroup.getCheckedRadioButtonId()));
 
                 createList(listNamePlaintext.getText().toString(), listDescriptionPlainText.getText().toString(), index);
-                finish();
+                //finish();
 
-                Intent i = new Intent(CreateNewList.this, ManageCustomListsActivity.class);
-                startActivity(i);
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("REFRESH",true);
+                setResult(RESULT_OK,returnIntent);
+                finish();
             }
         });
     }
@@ -73,8 +75,5 @@ public class CreateNewList extends AppCompatActivity
     public void onBackPressed() {
         super.onBackPressed();
         finish();
-
-        Intent i = new Intent(CreateNewList.this, ManageCustomListsActivity.class);
-        startActivity(i);
     }
 }

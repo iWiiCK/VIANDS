@@ -112,6 +112,10 @@ public class DisplayingProductDetails extends AppCompatActivity
         cancelButton = findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(v ->
         {
+            //finish();
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("REFRESH",true);
+            setResult(RESULT_OK,returnIntent);
             finish();
         });
 
@@ -284,8 +288,6 @@ public class DisplayingProductDetails extends AppCompatActivity
     public void onBackPressed()
     {
         super.onBackPressed();
-        Intent i = new Intent(this, ManageCustomListsActivity.class);
-        startActivity(i);
         finish();
     }
 

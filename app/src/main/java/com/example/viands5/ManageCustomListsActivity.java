@@ -1,6 +1,7 @@
 package com.example.viands5;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -94,12 +95,19 @@ public class ManageCustomListsActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(getIntent());
+        overridePendingTransition(0, 0);
+    }
+
+    @Override
     public void onBackPressed()
     {
         super.onBackPressed();
-        Intent i = new Intent(this, MainScreenActivity.class);
-        startActivity(i);
-
+        finish();
     }
 
     private void loadDataFromDB()

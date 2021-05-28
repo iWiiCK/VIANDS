@@ -46,8 +46,7 @@ public class TypeBarcode extends AppCompatActivity
 
         cancelButton.setOnClickListener(v ->
         {
-            Intent i = new Intent(TypeBarcode.this, MainScreenActivity.class);
-            startActivity(i);
+            finish();
         });
 
     }
@@ -56,8 +55,7 @@ public class TypeBarcode extends AppCompatActivity
     public void onBackPressed()
     {
         super.onBackPressed();
-        Intent i = new Intent(TypeBarcode.this, MainScreenActivity.class);
-        startActivity(i);
+        finish();
     }
 
     private void searchProduct(String barcode)

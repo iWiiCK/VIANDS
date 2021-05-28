@@ -89,8 +89,7 @@ public class ClickedList extends AppCompatActivity
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent i = new Intent(ClickedList.this, ManageCustomListsActivity.class);
-        startActivity(i);
+        finish();
     }
 
     private void createList()
@@ -328,8 +327,6 @@ public class ClickedList extends AppCompatActivity
         builder.setPositiveButton("YES", (dialog, which) ->
         {
             customLinearAdapter.clearAllProducts();
-            Intent i = new Intent(ClickedList.this, ManageCustomListsActivity.class);
-            startActivity(i);
         });
 
         builder.setNegativeButton("NO", (dialog, which) -> {});

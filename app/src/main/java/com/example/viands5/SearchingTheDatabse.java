@@ -37,16 +37,12 @@ public class SearchingTheDatabse extends AppCompatActivity
 
         viewResultsButton.setOnClickListener(v->
         {
-            if(apiHandler.getStatusCode() == -1)
-            {
-                Toast.makeText(this, "Give Us A Moment", Toast.LENGTH_SHORT).show();
-            }
-
-            else if(apiHandler.getStatusCode() == 0)
+            if(apiHandler.getStatusCode() == -1 || apiHandler.getStatusCode() == 0)
             {
                 Toast.makeText(this, "Ops!, Invalid Barcode", Toast.LENGTH_SHORT).show();
                 finish();
             }
+
             else
             {
                 displayProductDetails();
