@@ -16,28 +16,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * 1 - This class is created with the purpose of handling the firestore database.
+ * 2 - The firestore database is implemented as a backup system in this application.
+ * 3 - Once a successful google authentication is done, a user will be created with the Unique ID.
+ * 4 - This unique ID will be the document name and each document like this will consist of data such as
+ *      names, last backup data(timestamp) and 3 more collections for products, lists and lists_to_products.
+ */
 public class FirestoreHandler
 {
     private static final String TAG = "firestore_error";
-    private FirebaseFirestore firestore;
-    private FirebaseAuth auth;
-    private FirebaseUser user;
+    private final FirebaseFirestore firestore;
+    private final FirebaseUser user;
 
     private  final String ROOT_COLLECTION = "users";
     private final String PRODUCTS_COLLECTION = "products";
     private final String LISTS_COLLECTION = "lists";
     private final String PRODUCTS_TO_LISTS_COLLECTION = "products_to_lists";
-    private  String userID;
+    private final String userID;
 
-    private Context context;
-    private MySQLiteDB mySQLiteDB;
-
-    private final String USER_NAME  = "user_name";
-    private final String LAST_BACKUP = "last_scanned";
+    private final Context context;
+    private final MySQLiteDB mySQLiteDB;
 
     public FirestoreHandler(Context context)
     {
-        auth = FirebaseAuth.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         firestore = FirebaseFirestore.getInstance();
         userID = user.getUid();
@@ -145,7 +148,9 @@ public class FirestoreHandler
         }
 
         Map<String, Object> data = new HashMap<>();
+        String LAST_BACKUP = "last_scanned";
         data.put(LAST_BACKUP, backupTime);
+        String USER_NAME = "user_name";
         data.put(USER_NAME, user.getDisplayName());
 
         firestore.collection(ROOT_COLLECTION).document(user.getUid()).set(data);

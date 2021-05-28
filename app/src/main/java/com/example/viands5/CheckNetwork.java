@@ -7,15 +7,16 @@ import android.net.NetworkCapabilities;
 import android.os.Build;
 
 /**
- * The prupose of this class is to find out whether the user has an active internet connection when interaction with the application
- * An example would be when the uses searches or scans barcode, refreshes the product details, logging into google accounts etc.
+ * 1 - The prupose of this class is to find out whether the user has an active internet connection when interaction with the application
+ * 2 - An example would be when the uses searches or scans barcode, refreshes the product details, logging into google accounts etc.
  */
 public class CheckNetwork
 {
-    private final Context context;
+    private final Context CONTEXT;
+
     public CheckNetwork(Context context)
     {
-        this.context = context;
+        this.CONTEXT = context;
     }
 
     //This method returns whether the user has an internet connection
@@ -24,7 +25,7 @@ public class CheckNetwork
     {
         boolean isNetworkConnected = false;
 
-        ConnectivityManager connectivityMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityMgr = (ConnectivityManager) CONTEXT.getSystemService(Context.CONNECTIVITY_SERVICE);
         Network[] allNetworks = new Network[0];
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)

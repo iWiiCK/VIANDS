@@ -1,9 +1,15 @@
 package com.example.viands5;
 
+/**
+ * 1 - This is a class purely created for the purpose of testing the viands application during production.
+ * 2 - the details created here are purely fictional and may store extreme values for testing purposes.
+ */
 public class DummyDBData
 {
  public DummyDBData() {}
 
+    //This method loads the dummy data to the SQLite database
+    //////////////////////////////////////////////////////////
    public void loadDummyData(MySQLiteDB localDB)
    {
        //Creating the dummy products and adding to the db
@@ -71,6 +77,8 @@ public class DummyDBData
        localDB.addProductsToLists(dummyProduct3, dummyList10);
    }
 
+   //the method clears all the dummy data from the SQLite database
+    ////////////////////////////////////////////////////////////////
    public void clearDummyData(MySQLiteDB localDB)
    {
        localDB.factoryResetDatabase();

@@ -35,8 +35,12 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * 1 - This class handles all the activities related to the google login screen.
+ * 2 - This will also handle the user preferences interactions once a sucessful
+ *      Authentication has been made
+ */
 public class LoginScreen extends AppCompatActivity
 {
 
@@ -98,6 +102,7 @@ public class LoginScreen extends AppCompatActivity
         firestore = FirebaseFirestore.getInstance();
 
 
+        //Check whether the user is logged in or not
         if(user != null)
         {
             userID = user.getUid();
@@ -111,6 +116,7 @@ public class LoginScreen extends AppCompatActivity
 
     }
 
+    //Display the sign in screen to the user
     private void displaySignInScreen()
     {
         signInLayout.setVisibility(View.VISIBLE);

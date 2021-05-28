@@ -20,6 +20,12 @@ import java.util.ArrayList;
 
 import static com.example.viands5.R.drawable.default_food_img;
 
+/**
+ * 1 - This class is used for displaying the details of food products to the user in a recycler view.
+ * 2 - Clicking a product will display a new activity with detailed descriptions of each object.
+ * 3 - Swiping the recycler view elements will prompt a delete alert.
+ */
+
 public class CustomLinearAdapter extends RecyclerView.Adapter<CustomLinearAdapter.MyViewHolder >
 {
     private final int listId;
@@ -86,7 +92,7 @@ public class CustomLinearAdapter extends RecyclerView.Adapter<CustomLinearAdapte
         }
         else
         {
-            ByteArrayInputStream imageStream = new ByteArrayInputStream((byte[]) productImage.get(position));
+            ByteArrayInputStream imageStream = new ByteArrayInputStream(productImage.get(position));
             Bitmap bitmap= BitmapFactory.decodeStream(imageStream);
 
             holder.placeHolderImage.setImageBitmap(bitmap);
@@ -155,7 +161,7 @@ public class CustomLinearAdapter extends RecyclerView.Adapter<CustomLinearAdapte
 
                 i.putExtra("PRODUCT_INGREDIENTS", ingredients.get(holder.getBindingAdapterPosition()));
                 i.putExtra("PRODUCT_NUTRIENTS", nutrients.get(holder.getBindingAdapterPosition()));
-                i.putExtra("PRODUCT_IMAGE", (byte[]) productImage.get(holder.getBindingAdapterPosition()));
+                i.putExtra("PRODUCT_IMAGE", productImage.get(holder.getBindingAdapterPosition()));
                 activity.startActivityForResult(i, 1);
             });
         }

@@ -1,5 +1,8 @@
 package com.example.viands5;
 
+/**
+ * 1 - This is a class dedicated to handling the creation of the a List object
+ */
 public class List
 {
     private int id, listColour;

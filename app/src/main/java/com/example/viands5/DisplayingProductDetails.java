@@ -40,6 +40,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
+/**
+ * 1 - This class represent a detailed product data.
+ * 2 - Unlike the recycler view items, here, all the data are displayed.
+ * 3 - The products will be displayed either from the local SQLite data base or
+ * f    rom fetching data from the API.
+ */
 public class DisplayingProductDetails extends AppCompatActivity
 {
     private MySQLiteDB mySQLiteDB;
@@ -192,7 +198,7 @@ public class DisplayingProductDetails extends AppCompatActivity
         itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.recycler_view_divider)));
         recyclerView.addItemDecoration(itemDecorator);
 
-        if(customGridAdapter.getListId().size() < 1)
+        if(customGridAdapter.getLIST_IDS().size() < 1)
         {
             hiddenEmptyListLogo.setVisibility(View.VISIBLE);
         }

@@ -32,14 +32,14 @@ import android.widget.TextView;
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 /**
- * When the user clicks on a list, displaying the content of that particular list and deleting items from that
- * list will be handled by this class
+ * 1 - When the user clicks on a list, displaying the content of that particular list and deleting items from that
+ *     list will be handled by this class
  */
 public class ClickedList extends AppCompatActivity
 {
     private int listId, listColour;
     private String listName;
-    private final MySQLiteDB mySQLiteDB = new MySQLiteDB(ClickedList.this);
+    private final MySQLiteDB MY_SQLITE_DB = new MySQLiteDB(ClickedList.this);
     private CustomLinearAdapter customLinearAdapter;
     private TextView listDescriptionLabel;
 
@@ -110,7 +110,7 @@ public class ClickedList extends AppCompatActivity
     private void populateRecyclerView(int listId)
     {
         ProductsInListHandler productInList = new ProductsInListHandler(listId);
-        productInList.loadList(mySQLiteDB);
+        productInList.loadList(MY_SQLITE_DB);
 
         //Populating the Recycler View
         ///////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +150,7 @@ public class ClickedList extends AppCompatActivity
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
         {
             alertDeleteProductFromList(
-                    (String)customLinearAdapter.getName().get(viewHolder.getAbsoluteAdapterPosition()), viewHolder.getAbsoluteAdapterPosition());
+                    customLinearAdapter.getName().get(viewHolder.getAbsoluteAdapterPosition()), viewHolder.getAbsoluteAdapterPosition());
         }
 
         @Override
@@ -242,7 +242,7 @@ public class ClickedList extends AppCompatActivity
                 {
                     ab.setTitle(listNamePlaintext.getText().toString());
                     listDescriptionLabel.setText(listDescriptionPlainText.getText().toString());
-                    mySQLiteDB.updateList(listId, listNamePlaintext.getText().toString(), listDescriptionPlainText.getText().toString(), checkedColour);
+                    MY_SQLITE_DB.updateList(listId, listNamePlaintext.getText().toString(), listDescriptionPlainText.getText().toString(), checkedColour);
 
                     listNamePlaintext.setText("");
                     listDescriptionPlainText.setText("");
@@ -260,7 +260,7 @@ public class ClickedList extends AppCompatActivity
                 builder.setPositiveButton("YES", (dialog, which) ->
                 {
                     ab.setTitle(listNamePlaintext.getText().toString());
-                    mySQLiteDB.updateList(listId, listNamePlaintext.getText().toString(), null, checkedColour);
+                    MY_SQLITE_DB.updateList(listId, listNamePlaintext.getText().toString(), null, checkedColour);
 
                     listNamePlaintext.setText("");
                     hiddenEditMenu.setVisibility(View.GONE);
@@ -277,7 +277,7 @@ public class ClickedList extends AppCompatActivity
                 builder.setPositiveButton("YES", (dialog, which) ->
                 {
                     listDescriptionLabel.setText(listDescriptionPlainText.getText().toString());
-                    mySQLiteDB.updateList(listId, null, listDescriptionPlainText.getText().toString(),checkedColour);
+                    MY_SQLITE_DB.updateList(listId, null, listDescriptionPlainText.getText().toString(),checkedColour);
 
                     listDescriptionPlainText.setText("");
                     hiddenEditMenu.setVisibility(View.GONE);
@@ -293,7 +293,7 @@ public class ClickedList extends AppCompatActivity
             {
                 builder.setPositiveButton("YES", (dialog, which) ->
                 {
-                    mySQLiteDB.updateList(listId, null, null,checkedColour);
+                    MY_SQLITE_DB.updateList(listId, null, null,checkedColour);
                     hiddenEditMenu.setVisibility(View.GONE);
                 });
 

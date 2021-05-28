@@ -9,11 +9,16 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+/**
+ * 1 - This class is responsible for creating user defined new lists.
+ * 2 - The default list which is the recent products list is created when the user starts the
+ *      application for the first time
+ */
 public class CreateNewList extends AppCompatActivity
 {
     private RadioGroup listColourRadioGroup;
     private TextView listNamePlaintext, listDescriptionPlainText;
-    private final MySQLiteDB mySQLiteDB = new MySQLiteDB(this);
+    private final MySQLiteDB MY_SQLITE_DB = new MySQLiteDB(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,8 +60,8 @@ public class CreateNewList extends AppCompatActivity
     /////////////////////////////////////////////////////
     private void createList(String name, String description, int colour)
     {
-        int listId = mySQLiteDB.readNumOfLists();
-        mySQLiteDB.addList(new List(listId, name, description, colour));
+        int listId = MY_SQLITE_DB.readNumOfLists();
+        MY_SQLITE_DB.addList(new List(listId, name, description, colour));
     }
 
     @Override

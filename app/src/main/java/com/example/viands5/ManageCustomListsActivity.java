@@ -1,7 +1,6 @@
 package com.example.viands5;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -9,7 +8,6 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
@@ -23,7 +21,6 @@ import android.view.MenuItem;
 import android.widget.Button;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
@@ -224,7 +221,7 @@ public class ManageCustomListsActivity extends AppCompatActivity
     {
         if(item.getItemId() == R.id.delete_button)
         {
-            if(customGridAdapter.getListId().size() > 0)
+            if(customGridAdapter.getLIST_IDS().size() > 0)
                 displayDeleteAllOptions();
         }
 
