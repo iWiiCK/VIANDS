@@ -293,6 +293,22 @@ public class MySQLiteDB extends SQLiteOpenHelper
         return cursor;
     }
 
+    public boolean defaultListExists()
+    {
+        Cursor cursor  = readListsTableData();
+
+        if(cursor != null)
+        {
+            while (cursor.moveToNext())
+            {
+                if(cursor.getInt(0) == 0)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
 
     //This method reads all the data from the Lists Table
     ////////////////////////////////////////////////////////
@@ -561,10 +577,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
     {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + PRODUCTS_TABLE);
-        //db.delete(LISTS_TABLE, COLUMN_ID + "!=?", new String[]{Integer.toString(0)});
-        db.execSQL("DELETE FROM " + LISTS_TABLE);
+        db.delete(LISTS_TABLE, COLUMN_ID + "!=?", new String[]{Integer.toString(0)});
         db.execSQL("DELETE FROM " + PRODUCTS_TO_LISTS_TABLE);
 
-        //autoBackupIfEnabled();
+        autoBackupIfEnabled();
     }
 }
