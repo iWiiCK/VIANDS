@@ -95,4 +95,6 @@
     <string name="loading_last_backup">...</string>
     <string name="no_backups_created">You have Not Created Any Backups Yet !</string>
     <string name="auto_backup_enabled">AUTO BACKUP IS ENABLED</string>
+    <string name="this_will_be_displayed_when_the_list_is_empty">this will be displayed when the list is empty</string>
+    <string name="list_is_empty">LIST IS EMPTY !</string>
 </resources>

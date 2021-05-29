@@ -20,13 +20,51 @@
         app:layout_constraintTop_toBottomOf="@+id/listDescriptionLabel"
         app:layout_constraintVertical_bias="0.0">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/clickedListRecyclerView"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipChildren="false"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/clickedListEmptyLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:text="@string/list_is_empty"
+                android:textColor="#FFFFFF"
+                app:layout_constraintEnd_toEndOf="@+id/clickedListEmptyImage"
+                app:layout_constraintHorizontal_bias="0.504"
+                app:layout_constraintStart_toStartOf="@+id/clickedListEmptyImage"
+                app:layout_constraintTop_toBottomOf="@+id/clickedListEmptyImage" />
+
+            <ImageView
+                android:id="@+id/clickedListEmptyImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:contentDescription="@string/this_will_be_displayed_when_the_list_is_empty"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/emptylistlogo" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/clickedListRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipChildren="false"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </androidx.recyclerview.widget.RecyclerView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.cardview.widget.CardView>
 
     <TextView

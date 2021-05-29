@@ -25,6 +25,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -49,6 +50,9 @@ public class ClickedList extends AppCompatActivity
     private RadioGroup listColourRadioGroup;
     private RadioButton cyanRadioButton, purpleRadioButton, pinkRadioButton, redRadioButton, greenRadioButton, yellowRadioButton;
 
+    private ImageView clickedListEmptyImage;
+    private TextView clickedListEmptyLabel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -69,6 +73,9 @@ public class ClickedList extends AppCompatActivity
         redRadioButton = findViewById(R.id.redRadioButton);
         greenRadioButton = findViewById(R.id.greenRadioButton);
         yellowRadioButton = findViewById(R.id.yellowRadioButton);
+
+        clickedListEmptyImage = findViewById(R.id.clickedListEmptyImage);
+        clickedListEmptyLabel = findViewById(R.id.clickedListEmptyLabel);
 
         createList();
         ActionBar ab = getSupportActionBar();
@@ -132,6 +139,18 @@ public class ClickedList extends AppCompatActivity
         linearLayoutManager.setReverseLayout(true);
         recyclerView.setLayoutManager(linearLayoutManager);
         new ItemTouchHelper(itemTouchHelper).attachToRecyclerView(recyclerView);
+
+        if(productInList.getBarcodeInList().size() == 0)
+        {
+            clickedListEmptyLabel.setVisibility(View.VISIBLE);
+            clickedListEmptyImage.setVisibility(View.VISIBLE);
+        }
+
+        else
+        {
+            clickedListEmptyLabel.setVisibility(View.GONE);
+            clickedListEmptyImage.setVisibility(View.GONE);
+        }
 
     }
 
@@ -325,7 +344,11 @@ public class ClickedList extends AppCompatActivity
         builder.setMessage("Are you sure you want to Clear all the data in " + listName + " ?" );
 
         builder.setPositiveButton("YES", (dialog, which) ->
-                customLinearAdapter.clearAllProducts());
+        {
+            customLinearAdapter.clearAllProducts();
+            clickedListEmptyLabel.setVisibility(View.VISIBLE);
+            clickedListEmptyImage.setVisibility(View.VISIBLE);
+        });
 
         builder.setNegativeButton("NO", (dialog, which) -> {});
 
@@ -342,8 +365,24 @@ public class ClickedList extends AppCompatActivity
         builder.setTitle("Remove Product From List");
         builder.setMessage("Are you sure you want to Remove " + name + " from " + listName + " ?" );
 
+
         builder.setPositiveButton("YES", (dialog, which) ->
-                customLinearAdapter.removeProduct(position));
+        {
+            customLinearAdapter.removeProduct(position);
+
+            if(customLinearAdapter.getBARCODE().size() == 0)
+            {
+                clickedListEmptyLabel.setVisibility(View.VISIBLE);
+                clickedListEmptyImage.setVisibility(View.VISIBLE);
+            }
+
+            else
+            {
+                clickedListEmptyLabel.setVisibility(View.GONE);
+                clickedListEmptyImage.setVisibility(View.GONE);
+            }
+
+        });
 
         builder.setNegativeButton("NO", (dialog, which) ->
                 customLinearAdapter.notifyItemChanged(position));

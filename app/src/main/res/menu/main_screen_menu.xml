@@ -4,8 +4,7 @@
 
     <item android:id="@+id/login_button"
         android:title="Login"
-        android:icon="@drawable/ic_baseline_login_24"
-        app:actionViewClass="android.widget.ActionMenuView"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_baseline_account_circle_24"
+        app:showAsAction="ifRoom" />
 
 </menu>

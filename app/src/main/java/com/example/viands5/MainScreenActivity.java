@@ -10,8 +10,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +29,8 @@ public class MainScreenActivity extends AppCompatActivity
 {
     private boolean signedIn = false;
     private long back_pressed = 0;
+    private ImageView listEmptyImage;
+    private TextView listEmptyLabel;
 
     private final MySQLiteDB MY_SQLITE_DB = new MySQLiteDB(MainScreenActivity.this);
 
@@ -34,6 +39,8 @@ public class MainScreenActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
         CheckNetwork checkNetwork = new CheckNetwork(this);
+        listEmptyImage = findViewById(R.id.listEmptyImage);
+        listEmptyLabel = findViewById(R.id.listEmptyLabel);
 
         //Firebase Google authentication
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -129,6 +136,18 @@ public class MainScreenActivity extends AppCompatActivity
         linearLayoutManager.setStackFromEnd(true);
         linearLayoutManager.setReverseLayout(true);
         recyclerView.setLayoutManager(linearLayoutManager);
+
+        if(productInList.getBarcodeInList().size() == 0)
+        {
+            listEmptyLabel.setVisibility(View.VISIBLE);
+            listEmptyImage.setVisibility(View.VISIBLE);
+        }
+
+        else
+        {
+            listEmptyLabel.setVisibility(View.GONE);
+            listEmptyImage.setVisibility(View.GONE);
+        }
     }
 
     //Updating the custom lists when restarting the activity
