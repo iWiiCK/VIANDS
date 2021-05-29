@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -118,12 +119,19 @@ public class LoginScreen extends AppCompatActivity
     ////////////////////////////////////////////
     private void displaySignInScreen()
     {
+        CheckNetwork checkNetwork = new CheckNetwork(this);
         signInLayout.setVisibility(View.VISIBLE);
         alreadySignedInLayout.setVisibility(View.GONE);
 
         goBackButton.setOnClickListener(v-> finish());
         googleSignInButton.setOnClickListener(v->
-                signIn());
+        {
+            if(checkNetwork.isOnline())
+                signIn();
+            else
+                Toast.makeText(this, "You Are Offline !", Toast.LENGTH_SHORT).show();
+        });
+
     }
 
     //if the user is already signed in, display this screen.
@@ -189,6 +197,7 @@ public class LoginScreen extends AppCompatActivity
 
     private void signIn()
     {
+        googleSignInClient.signOut();
         Intent signInIntent = googleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -208,13 +217,13 @@ public class LoginScreen extends AppCompatActivity
                 {
                     // Google Sign In was successful, authenticate with Firebase
                     GoogleSignInAccount account = task.getResult(ApiException.class);
-                    Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                     firebaseAuthWithGoogle(account.getIdToken());
                 }
 
-                catch (ApiException e) {
+                catch (ApiException e)
+                {
                     // Google Sign In failed, update UI appropriately
-                    Log.w(TAG, "Google sign in failed", e);
+                    Toast.makeText(this, "Google Sign In Failed", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -234,22 +243,17 @@ public class LoginScreen extends AppCompatActivity
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful())
                     {
-                        // Sign in success, update UI with the signed-in user's information
+                        // Sign in success
                         Log.d(TAG, "signInWithCredential:success");
                         user = auth.getCurrentUser();
 
                         if(!mySQLiteDB.userExists(user.getUid()))
-                        {
                             mySQLiteDB.addUser(user.getUid(), 0, 0);
-                        }
 
                         recreate();
                     }
                     else
-                    {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithCredential:failure", task.getException());
-                    }
+                        Toast.makeText(this, "Invalid Credentials !", Toast.LENGTH_SHORT).show();
                 });
     }
 
