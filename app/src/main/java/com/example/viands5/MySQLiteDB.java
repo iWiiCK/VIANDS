@@ -79,7 +79,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
         if(user != null)
         {
             firestoreHandler = new FirestoreHandler(context);
-            Cursor cursor = getUserPreferences(firestoreHandler.getUserID());
+            Cursor cursor = getUserPreferences(firestoreHandler.getUSER_ID());
             if(cursor != null && cursor.getInt(1) == 1)
                return true;
         }
@@ -199,6 +199,36 @@ public class MySQLiteDB extends SQLiteOpenHelper
 
         cv.put(COLUMN_ENABLE_AUTO_BACKUP, enableAutoBackup);
         cv.put(COLUMN_REMEMBER_LOGIN, rememberLogin);
+
+        db.update(USER_PREFERENCES_TABLE, cv, COLUMN_USER_ID + "=?", new String[]{userID});
+    }
+
+    //Handles the user preferences about the auto backup options
+    //////////////////////////////////////////////////////////////
+    public void enableAutoBackup(String userID, boolean enable)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        if(enable)
+            cv.put(COLUMN_ENABLE_AUTO_BACKUP, 1);
+        else
+            cv.put(COLUMN_ENABLE_AUTO_BACKUP, 0);
+
+        db.update(USER_PREFERENCES_TABLE, cv, COLUMN_USER_ID + "=?", new String[]{userID});
+    }
+
+    //Handles the user preferences about the user login details
+    ///////////////////////////////////////////////////////////////
+    public void rememberUserLogin(String userID, boolean remember)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        if(remember)
+            cv.put(COLUMN_REMEMBER_LOGIN, 1);
+        else
+            cv.put(COLUMN_REMEMBER_LOGIN, 0);
 
         db.update(USER_PREFERENCES_TABLE, cv, COLUMN_USER_ID + "=?", new String[]{userID});
     }

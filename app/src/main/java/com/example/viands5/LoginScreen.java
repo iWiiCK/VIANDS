@@ -124,11 +124,10 @@ public class LoginScreen extends AppCompatActivity
 
         goBackButton.setOnClickListener(v-> finish());
         googleSignInButton.setOnClickListener(v->
-        {
-            signIn();
-        });
+                signIn());
     }
 
+    //if the user is already signed in, display this screen.
     private void displayAlreadyLoggedInScreen()
     {
         signInLayout.setVisibility(View.GONE);
@@ -170,10 +169,7 @@ public class LoginScreen extends AppCompatActivity
                 backupDataButton.setBackgroundColor(Color.GRAY);
                 backupDataButton.setEnabled(false);
 
-                if (rememberLoginSwitch.isChecked())
-                    mySQLiteDB.updateUserPreferences(userID,1 , 1);
-                else
-                    mySQLiteDB.updateUserPreferences(userID, 1, 0);
+                mySQLiteDB.enableAutoBackup(userID, true);
             }
 
             else
@@ -181,37 +177,12 @@ public class LoginScreen extends AppCompatActivity
                 backupDataButton.setBackgroundColor(Color.WHITE);
                 backupDataButton.setEnabled(true);
 
-                if (rememberLoginSwitch.isChecked())
-                    mySQLiteDB.updateUserPreferences(userID,0 , 1);
-                else
-                    mySQLiteDB.updateUserPreferences(userID, 0, 0);
+                mySQLiteDB.enableAutoBackup(userID, false);
 
             }
         });
 
-        rememberLoginSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-            {
-                if(isChecked)
-                {
-                    if (autoBackupSwitch.isChecked())
-                        mySQLiteDB.updateUserPreferences(userID,1 , 1);
-                    else
-                        mySQLiteDB.updateUserPreferences(userID, 0, 1);
-                }
-
-                else
-                {
-                    if (autoBackupSwitch.isChecked())
-                        mySQLiteDB.updateUserPreferences(userID,1 , 0);
-                    else
-                        mySQLiteDB.updateUserPreferences(userID, 0, 0);
-
-                }
-            }
-        });
+        rememberLoginSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> mySQLiteDB.rememberUserLogin(userID, isChecked));
     }
 
     private void signIn()
@@ -256,27 +227,24 @@ public class LoginScreen extends AppCompatActivity
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         auth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful())
-                        {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            user = auth.getCurrentUser();
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful())
+                    {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithCredential:success");
+                        user = auth.getCurrentUser();
 
-                            if(!mySQLiteDB.userExists(user.getUid()))
-                            {
-                                mySQLiteDB.addUser(user.getUid(), 0, 0);
-                            }
-
-                            recreate();
-                        }
-                        else
+                        if(!mySQLiteDB.userExists(user.getUid()))
                         {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            mySQLiteDB.addUser(user.getUid(), 0, 0);
                         }
+
+                        recreate();
+                    }
+                    else
+                    {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithCredential:failure", task.getException());
                     }
                 });
     }
@@ -321,15 +289,10 @@ public class LoginScreen extends AppCompatActivity
         });
 
         backupDataButton.setOnClickListener(v->
-        {
-            displayBackupOverrideAlert();
-
-        });
+                displayBackupOverrideAlert());
 
         restoreBackupButton.setOnClickListener(v->
-        {
-            displayRestoreAlert();
-        });
+                displayRestoreAlert());
     }
 
     //Restoring an already created backup
@@ -342,6 +305,13 @@ public class LoginScreen extends AppCompatActivity
 
         builder.setPositiveButton("YES", (dialog, which) ->
         {
+            if(autoBackupSwitch.isChecked())
+            {
+                mySQLiteDB.enableAutoBackup(userID, false);
+                autoBackupSwitch.setChecked(false);
+                backupDataButton.setEnabled(true);
+                backupDataButton.setBackgroundColor(Color.WHITE);
+            }
             firestoreHandler.restoreBackup();
         });
 

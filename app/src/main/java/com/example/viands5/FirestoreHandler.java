@@ -33,7 +33,7 @@ public class FirestoreHandler
     private final String PRODUCTS_COLLECTION = "products";
     private final String LISTS_COLLECTION = "lists";
     private final String PRODUCTS_TO_LISTS_COLLECTION = "products_to_lists";
-    private final String userID;
+    private final String USER_ID;
 
     private final Context CONTEXT;
     private final MySQLiteDB MY_SQLITE_DB;
@@ -43,15 +43,15 @@ public class FirestoreHandler
         FirebaseAuth auth = FirebaseAuth.getInstance();
         USER = auth.getCurrentUser();
         FIRESTORE = FirebaseFirestore.getInstance();
-        userID = USER.getUid();
+        USER_ID = USER.getUid();
 
         this.CONTEXT = context;
         MY_SQLITE_DB = new MySQLiteDB(this.CONTEXT);
 
     }
 
-    public String getUserID() {
-        return userID;
+    public String getUSER_ID() {
+        return USER_ID;
     }
 
     //This method wll handle the restoring of a previously saved backup
@@ -68,7 +68,7 @@ public class FirestoreHandler
 
         MY_SQLITE_DB.factoryResetDatabase();
 
-        FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
+        FIRESTORE.collection(ROOT_COLLECTION).document(USER_ID).collection(PRODUCTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(task ->
                 {
@@ -91,7 +91,7 @@ public class FirestoreHandler
                         Log.w(TAG, "Error getting documents.", task.getException());
                 });
 
-        FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
+        FIRESTORE.collection(ROOT_COLLECTION).document(USER_ID).collection(LISTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(task ->
                 {
@@ -111,7 +111,7 @@ public class FirestoreHandler
                         Log.w(TAG, "Error getting documents.", task.getException());
                 });
 
-        FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
+        FIRESTORE.collection(ROOT_COLLECTION).document(USER_ID).collection(PRODUCTS_TO_LISTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(task ->
                 {
@@ -136,7 +136,6 @@ public class FirestoreHandler
     //This included manual and automatic backup systems
     public void backUpLocalStorage()
     {
-
         ProgressDialog progressDialog = new ProgressDialog(CONTEXT);
         progressDialog.setTitle("Creating Backup");
         progressDialog.setMessage("Your Backup will be Created Shortly");
@@ -144,7 +143,7 @@ public class FirestoreHandler
         progressDialog.setCancelable(false);
         progressDialog.setIcon(R.drawable.backup_button_logo);
 
-        Cursor cursor = MY_SQLITE_DB.getUserPreferences(userID);
+        Cursor cursor = MY_SQLITE_DB.getUserPreferences(USER_ID);
         if(cursor != null && cursor.getInt(1) == 0)
         {
             progressDialog.show();
@@ -180,7 +179,7 @@ public class FirestoreHandler
 
         //Clearing the Products
         /////////////////////////
-        FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
+        FIRESTORE.collection(ROOT_COLLECTION).document(USER_ID).collection(PRODUCTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(task ->
                 {
@@ -190,7 +189,7 @@ public class FirestoreHandler
                         {
                             Log.d(TAG, document.getId() + " => " + document.getData().get("code"));
 
-                            FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
+                            FIRESTORE.collection(ROOT_COLLECTION).document(USER_ID).collection(PRODUCTS_COLLECTION)
                                     .document(document.getId()).delete();
                         }
 
@@ -207,7 +206,7 @@ public class FirestoreHandler
                                 //TODO: DID not backup the Image yet
                                 //products.put("product_image", cursor.getString(6));
 
-                                FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
+                                FIRESTORE.collection(ROOT_COLLECTION).document(USER_ID).collection(PRODUCTS_COLLECTION)
                                         .document(cursor.getString(0)).set(products);
                             }
                         }
@@ -228,7 +227,7 @@ public class FirestoreHandler
 
         //Clearing the Lists
         /////////////////////////
-        FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
+        FIRESTORE.collection(ROOT_COLLECTION).document(USER_ID).collection(LISTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(task ->
                 {
@@ -238,7 +237,7 @@ public class FirestoreHandler
                         {
                             Log.d(TAG, document.getId() + " => " + document.getData().get("code"));
 
-                            FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
+                            FIRESTORE.collection(ROOT_COLLECTION).document(USER_ID).collection(LISTS_COLLECTION)
                                     .document(document.getId()).delete();
                         }
 
@@ -251,7 +250,7 @@ public class FirestoreHandler
                                 lists.put("list_description", cursor.getString(2));
                                 lists.put("list_colour", String.valueOf(cursor.getInt(3)));
 
-                                FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
+                                FIRESTORE.collection(ROOT_COLLECTION).document(USER_ID).collection(LISTS_COLLECTION)
                                         .document(cursor.getString(0)).set(lists);
                             }
                         }
@@ -271,7 +270,7 @@ public class FirestoreHandler
 
         //Clearing products_to_lists lists
         /////////////////////////
-        FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
+        FIRESTORE.collection(ROOT_COLLECTION).document(USER_ID).collection(PRODUCTS_TO_LISTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(task ->
                 {
@@ -279,7 +278,7 @@ public class FirestoreHandler
                     {
                         for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
                         {
-                            FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
+                            FIRESTORE.collection(ROOT_COLLECTION).document(USER_ID).collection(PRODUCTS_TO_LISTS_COLLECTION)
                                     .document(document.getId()).delete();
                         }
 
@@ -291,7 +290,7 @@ public class FirestoreHandler
                                 productsToLists.put("product_code", cursor.getString(0));
                                 productsToLists.put("list_id", cursor.getString(1));
 
-                                FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
+                                FIRESTORE.collection(ROOT_COLLECTION).document(USER_ID).collection(PRODUCTS_TO_LISTS_COLLECTION)
                                         .document(cursor.getString(0) +"_"+ cursor.getInt(1)).set(productsToLists);
                             }
                         }
