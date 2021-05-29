@@ -44,7 +44,7 @@ import java.util.Objects;
  * 1 - This class represent a detailed product data.
  * 2 - Unlike the recycler view items, here, all the data are displayed.
  * 3 - The products will be displayed either from the local SQLite data base or
- * f    rom fetching data from the API.
+ *     from fetching data from the API.
  */
 public class DisplayingProductDetails extends AppCompatActivity
 {
@@ -116,6 +116,7 @@ public class DisplayingProductDetails extends AppCompatActivity
             finish();
         });
 
+        //If displaying a refreshed product, show a toast.
         if(refreshedProduct)
         {
             Toast.makeText(this, "Refreshed Data", Toast.LENGTH_SHORT).show();
@@ -127,6 +128,7 @@ public class DisplayingProductDetails extends AppCompatActivity
         ///////////////////////////////////////////////////////////////////////////////////////////////
         if(loadedFromList)
         {
+            //Displaying product from a list, but not a refreshed product
             if(!refreshedProduct)
             {
                 offlineDataMessage.setVisibility(View.VISIBLE);
@@ -137,6 +139,7 @@ public class DisplayingProductDetails extends AppCompatActivity
                 saveOrChangeListButton.setOnClickListener(v ->
                         selectListToAdd());
             }
+            //Displaying product from a list, but a refreshed product. (Real time data)
             else
             {
                 offlineDataMessage.setVisibility(View.GONE);
@@ -354,6 +357,7 @@ public class DisplayingProductDetails extends AppCompatActivity
                 }
             };
 
+            //Loading the image from a URL to the imageView
             Picasso.get().load(extras.getString("PRODUCT_IMAGE_URL")).into(productPlaceHolderImage);
             Picasso.get().load(extras.getString("PRODUCT_IMAGE_URL")).into(target);
         }

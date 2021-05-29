@@ -166,6 +166,7 @@ public class LoginScreen extends AppCompatActivity
         {
             if(isChecked)
             {
+                firestoreHandler.backUpLocalStorage();
                 backupDataButton.setBackgroundColor(Color.GRAY);
                 backupDataButton.setEnabled(false);
 

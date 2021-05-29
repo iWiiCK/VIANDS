@@ -28,25 +28,25 @@ import static com.example.viands5.R.drawable.default_food_img;
 
 public class CustomLinearAdapter extends RecyclerView.Adapter<CustomLinearAdapter.MyViewHolder >
 {
-    private final int listId;
-    private final Activity activity;
-    private final Context context;
-    private final ArrayList<String> barcode;
-    private final ArrayList<String> name;
+    private final int LIST_ID;
+    private final Activity ACTIVITY;
+    private final Context CONTEXT;
+    private final ArrayList<String> BARCODE;
+    private final ArrayList<String> NAMES;
     private final ArrayList<String> grade;
-    private final ArrayList<String> ingredients;
-    private final ArrayList<String> nutrients ;
-    private final ArrayList<Integer> novaGroup;
-    private final ArrayList<byte[]> productImage;
-    private final boolean enableInteractions;
-    private final MySQLiteDB mySQLiteDB;
+    private final ArrayList<String> INGREDIENTS;
+    private final ArrayList<String> NUTRIENTS;
+    private final ArrayList<Integer> NOVA_GROUPS;
+    private final ArrayList<byte[]> PRODUCT_IMAGES;
+    private final boolean ENABLE_INTERACTIONS;
+    private final MySQLiteDB MY_SQLITE_DB;
 
-    public ArrayList<String> getBarcode() {
-        return barcode;
+    public ArrayList<String> getBARCODE() {
+        return BARCODE;
     }
 
-    public ArrayList<String> getName() {
-        return name;
+    public ArrayList<String> getNAMES() {
+        return NAMES;
     }
 
     public CustomLinearAdapter(Activity activity, Context context, boolean enableInteractions , int listId,
@@ -58,26 +58,26 @@ public class CustomLinearAdapter extends RecyclerView.Adapter<CustomLinearAdapte
                                ArrayList<String> nutrients,
                                ArrayList<byte[]> productImage)
     {
-        this.activity = activity;
-        this.context = context;
-        this.enableInteractions = enableInteractions;
-        this.listId = listId;
-        this.barcode = barcode;
-        this.name = name;
+        this.ACTIVITY = activity;
+        this.CONTEXT = context;
+        this.ENABLE_INTERACTIONS = enableInteractions;
+        this.LIST_ID = listId;
+        this.BARCODE = barcode;
+        this.NAMES = name;
         this.grade = grade;
-        this.novaGroup= novaGroup;
-        this.ingredients = ingredients;
-        this.nutrients = nutrients;
-        this.productImage = productImage;
+        this.NOVA_GROUPS = novaGroup;
+        this.INGREDIENTS = ingredients;
+        this.NUTRIENTS = nutrients;
+        this.PRODUCT_IMAGES = productImage;
 
-        mySQLiteDB = new MySQLiteDB(context);
+        MY_SQLITE_DB = new MySQLiteDB(context);
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(CONTEXT);
         View view = inflater.inflate(R.layout.recycler_view_row, parent, false);
 
 
@@ -87,49 +87,50 @@ public class CustomLinearAdapter extends RecyclerView.Adapter<CustomLinearAdapte
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position)
     {
-        if(productImage.get(position) == null) {
+        if(PRODUCT_IMAGES.get(position) == null) {
             holder.placeHolderImage.setImageResource(default_food_img);
         }
         else
         {
-            ByteArrayInputStream imageStream = new ByteArrayInputStream(productImage.get(position));
+            ByteArrayInputStream imageStream = new ByteArrayInputStream(PRODUCT_IMAGES.get(position));
             Bitmap bitmap= BitmapFactory.decodeStream(imageStream);
 
             holder.placeHolderImage.setImageBitmap(bitmap);
         }
 
         holder.indexTextView.setText(String.valueOf(position + 1));
-        holder.nameTextView.setText(String.valueOf(name.get(position)));
+        holder.nameTextView.setText(String.valueOf(NAMES.get(position)));
         holder.gradeTextView.setText(String.valueOf(grade.get(position)).toUpperCase());
 
         switch (grade.get(position)) {
             case "a":
-                holder.gradeTextView.setTextColor(ContextCompat.getColor(context, R.color.grade_a));
+                holder.gradeTextView.setTextColor(ContextCompat.getColor(CONTEXT, R.color.grade_a));
                 break;
             case "b":
-                holder.gradeTextView.setTextColor(ContextCompat.getColor(context, R.color.grade_b));
+                holder.gradeTextView.setTextColor(ContextCompat.getColor(CONTEXT, R.color.grade_b));
                 break;
             case "c":
-                holder.gradeTextView.setTextColor(ContextCompat.getColor(context, R.color.grade_c));
+                holder.gradeTextView.setTextColor(ContextCompat.getColor(CONTEXT, R.color.grade_c));
                 break;
             case "d":
-                holder.gradeTextView.setTextColor(ContextCompat.getColor(context, R.color.grade_d));
+                holder.gradeTextView.setTextColor(ContextCompat.getColor(CONTEXT, R.color.grade_d));
                 break;
             default:
-                holder.gradeTextView.setTextColor(ContextCompat.getColor(context, R.color.grade_e));
+                holder.gradeTextView.setTextColor(ContextCompat.getColor(CONTEXT, R.color.grade_e));
                 break;
         }
 
 
-        if(enableInteractions)
+        //Enabling interactions everywhere except the main screen
+        if(ENABLE_INTERACTIONS)
         {
             holder.itemView.setOnClickListener(v ->
             {
-                Intent i = new Intent(context, DisplayingProductDetails.class);
-                i.putExtra("PRODUCT_BARCODE", barcode.get(holder.getBindingAdapterPosition()));
-                i.putExtra("PRODUCT_NAME", name.get(holder.getBindingAdapterPosition()));
+                Intent i = new Intent(CONTEXT, DisplayingProductDetails.class);
+                i.putExtra("PRODUCT_BARCODE", BARCODE.get(holder.getBindingAdapterPosition()));
+                i.putExtra("PRODUCT_NAME", NAMES.get(holder.getBindingAdapterPosition()));
                 i.putExtra("LOADED_FROM_LIST", true);
-                i.putExtra("LIST_ID", this.listId);
+                i.putExtra("LIST_ID", this.LIST_ID);
 
                 switch (grade.get(holder.getBindingAdapterPosition())) {
                     case "a":
@@ -149,27 +150,27 @@ public class CustomLinearAdapter extends RecyclerView.Adapter<CustomLinearAdapte
                         break;
                 }
 
-                if (novaGroup.get(holder.getBindingAdapterPosition()).equals(1))
+                if (NOVA_GROUPS.get(holder.getBindingAdapterPosition()).equals(1))
                     i.putExtra("PRODUCT_NOVA_GROUP", R.drawable.nova_grade_1);
-                else if (novaGroup.get(holder.getBindingAdapterPosition()).equals(2))
+                else if (NOVA_GROUPS.get(holder.getBindingAdapterPosition()).equals(2))
                     i.putExtra("PRODUCT_NOVA_GROUP", R.drawable.nova_grade_2);
-                else if (novaGroup.get(holder.getBindingAdapterPosition()).equals(3))
+                else if (NOVA_GROUPS.get(holder.getBindingAdapterPosition()).equals(3))
                     i.putExtra("PRODUCT_NOVA_GROUP", R.drawable.nova_grade_3);
                 else
                     i.putExtra("PRODUCT_NOVA_GROUP", R.drawable.nova_grade_4);
 
 
-                i.putExtra("PRODUCT_INGREDIENTS", ingredients.get(holder.getBindingAdapterPosition()));
-                i.putExtra("PRODUCT_NUTRIENTS", nutrients.get(holder.getBindingAdapterPosition()));
-                i.putExtra("PRODUCT_IMAGE", productImage.get(holder.getBindingAdapterPosition()));
-                activity.startActivityForResult(i, 1);
+                i.putExtra("PRODUCT_INGREDIENTS", INGREDIENTS.get(holder.getBindingAdapterPosition()));
+                i.putExtra("PRODUCT_NUTRIENTS", NUTRIENTS.get(holder.getBindingAdapterPosition()));
+                i.putExtra("PRODUCT_IMAGE", PRODUCT_IMAGES.get(holder.getBindingAdapterPosition()));
+                ACTIVITY.startActivityForResult(i, 1);
             });
         }
     }
 
     @Override
     public int getItemCount() {
-        return name.size();
+        return NAMES.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder
@@ -194,19 +195,19 @@ public class CustomLinearAdapter extends RecyclerView.Adapter<CustomLinearAdapte
     ///////////////////////////////////////
     public  void removeProduct(int position)
     {
-        mySQLiteDB.deleteProductFromList(barcode.get(position), listId);
-        int count = mySQLiteDB.numOfSameProductsInDifferentLists(barcode.get(position));
+        MY_SQLITE_DB.deleteProductFromList(BARCODE.get(position), LIST_ID);
+        int count = MY_SQLITE_DB.numOfSameProductsInDifferentLists(BARCODE.get(position));
 
         if(count == 0)
-            mySQLiteDB.removeProduct(barcode.get(position));
+            MY_SQLITE_DB.removeProduct(BARCODE.get(position));
 
-        barcode.remove(position);
-        name.remove(position);
+        BARCODE.remove(position);
+        NAMES.remove(position);
         grade.remove(position);
-        novaGroup.remove(position);
-        ingredients.remove(position);
-        nutrients.remove(position);
-        productImage.remove(position);
+        NOVA_GROUPS.remove(position);
+        INGREDIENTS.remove(position);
+        NUTRIENTS.remove(position);
+        PRODUCT_IMAGES.remove(position);
 
         notifyDataSetChanged();
     }
@@ -216,22 +217,22 @@ public class CustomLinearAdapter extends RecyclerView.Adapter<CustomLinearAdapte
     public void clearAllProducts()
     {
         int count;
-        mySQLiteDB.clearAllProductsFromList(listId);
+        MY_SQLITE_DB.clearAllProductsFromList(LIST_ID);
 
-        for(int i = 0 ; i < barcode.size() ; i++)
+        for(int i = 0; i < BARCODE.size() ; i++)
         {
-            count = mySQLiteDB.numOfSameProductsInDifferentLists(barcode.get(i));
+            count = MY_SQLITE_DB.numOfSameProductsInDifferentLists(BARCODE.get(i));
             if(count == 0)
-                mySQLiteDB.removeProduct(barcode.get(i));
+                MY_SQLITE_DB.removeProduct(BARCODE.get(i));
         }
 
-        barcode.clear();
-        name.clear();
+        BARCODE.clear();
+        NAMES.clear();
         grade.clear();
-        novaGroup.clear();
-        ingredients.clear();
-        nutrients.clear();
-        productImage.clear();
+        NOVA_GROUPS.clear();
+        INGREDIENTS.clear();
+        NUTRIENTS.clear();
+        PRODUCT_IMAGES.clear();
 
         notifyDataSetChanged();
     }

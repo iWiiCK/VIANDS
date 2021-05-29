@@ -150,7 +150,7 @@ public class ClickedList extends AppCompatActivity
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
         {
             alertDeleteProductFromList(
-                    customLinearAdapter.getName().get(viewHolder.getAbsoluteAdapterPosition()), viewHolder.getAbsoluteAdapterPosition());
+                    customLinearAdapter.getNAMES().get(viewHolder.getAbsoluteAdapterPosition()), viewHolder.getAbsoluteAdapterPosition());
         }
 
         @Override
@@ -183,7 +183,7 @@ public class ClickedList extends AppCompatActivity
     {
         if(item.getItemId() == R.id.delete_button)
         {
-            if(customLinearAdapter.getBarcode().size() > 0)
+            if(customLinearAdapter.getBARCODE().size() > 0)
                 displayDeleteAllOptionsAlert();
         }
 

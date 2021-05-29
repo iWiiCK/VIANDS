@@ -26,8 +26,8 @@ import java.util.Objects;
 public class FirestoreHandler
 {
     private static final String TAG = "firestore_error";
-    private final FirebaseFirestore firestore;
-    private final FirebaseUser user;
+    private final FirebaseFirestore FIRESTORE;
+    private final FirebaseUser USER;
 
     private  final String ROOT_COLLECTION = "users";
     private final String PRODUCTS_COLLECTION = "products";
@@ -35,18 +35,18 @@ public class FirestoreHandler
     private final String PRODUCTS_TO_LISTS_COLLECTION = "products_to_lists";
     private final String userID;
 
-    private final Context context;
-    private final MySQLiteDB mySQLiteDB;
+    private final Context CONTEXT;
+    private final MySQLiteDB MY_SQLITE_DB;
 
     public FirestoreHandler(Context context)
     {
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-        firestore = FirebaseFirestore.getInstance();
-        userID = user.getUid();
+        USER = auth.getCurrentUser();
+        FIRESTORE = FirebaseFirestore.getInstance();
+        userID = USER.getUid();
 
-        this.context = context;
-        mySQLiteDB = new MySQLiteDB(this.context);
+        this.CONTEXT = context;
+        MY_SQLITE_DB = new MySQLiteDB(this.CONTEXT);
 
     }
 
@@ -54,9 +54,11 @@ public class FirestoreHandler
         return userID;
     }
 
+    //This method wll handle the restoring of a previously saved backup
+    ///////////////////////////////////////////////////////////////////////
     public void restoreBackup()
     {
-        ProgressDialog progressDialog = new ProgressDialog(context);
+        ProgressDialog progressDialog = new ProgressDialog(CONTEXT);
         progressDialog.setTitle("Restoring Backup");
         progressDialog.setMessage("We are Restoring your Data");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -64,9 +66,9 @@ public class FirestoreHandler
         progressDialog.setIcon(R.drawable.restore_button_logo);
         progressDialog.show();
 
-        mySQLiteDB.factoryResetDatabase();
+        MY_SQLITE_DB.factoryResetDatabase();
 
-        firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
+        FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(task ->
                 {
@@ -74,7 +76,7 @@ public class FirestoreHandler
                     {
                         for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
                         {
-                            mySQLiteDB.addProduct(new Product(
+                            MY_SQLITE_DB.addProduct(new Product(
                                     document.getString("code"),
                                     document.getString("name"),
                                     document.getString("grade"),
@@ -89,7 +91,7 @@ public class FirestoreHandler
                         Log.w(TAG, "Error getting documents.", task.getException());
                 });
 
-        firestore.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
+        FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(task ->
                 {
@@ -97,7 +99,7 @@ public class FirestoreHandler
                     {
                         for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
                         {
-                            mySQLiteDB.addList(new List(
+                            MY_SQLITE_DB.addList(new List(
                                     document.getString("id"),
                                     document.getString("list_name"),
                                     document.getString("list_description"),
@@ -109,7 +111,7 @@ public class FirestoreHandler
                         Log.w(TAG, "Error getting documents.", task.getException());
                 });
 
-        firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
+        FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(task ->
                 {
@@ -117,7 +119,7 @@ public class FirestoreHandler
                     {
                         for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
                         {
-                            mySQLiteDB.addProductsToLists(
+                            MY_SQLITE_DB.addProductsToLists(
                                     document.getString("product_code"),
                                     document.getString("list_id")
                             );
@@ -130,34 +132,55 @@ public class FirestoreHandler
                 });
     }
 
+    //This method will handle the Backup functionality of the application.
+    //This included manual and automatic backup systems
     public void backUpLocalStorage()
     {
-        String backupTime = String.valueOf(Calendar.getInstance().getTime());
 
-        ProgressDialog progressDialog = new ProgressDialog(context);
+        ProgressDialog progressDialog = new ProgressDialog(CONTEXT);
         progressDialog.setTitle("Creating Backup");
         progressDialog.setMessage("Your Backup will be Created Shortly");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
         progressDialog.setIcon(R.drawable.backup_button_logo);
 
-        Cursor cursor = mySQLiteDB.getUserPreferences(userID);
+        Cursor cursor = MY_SQLITE_DB.getUserPreferences(userID);
         if(cursor != null && cursor.getInt(1) == 0)
         {
             progressDialog.show();
         }
 
+        backupProducts();
+        backupLists();
+        backupProductsToLists();
+
+        progressDialog.dismiss();
+    }
+
+    private void setLastBackupData()
+    {
+        String backupTime = String.valueOf(Calendar.getInstance().getTime());
         Map<String, Object> data = new HashMap<>();
         String LAST_BACKUP = "last_scanned";
         data.put(LAST_BACKUP, backupTime);
         String USER_NAME = "user_name";
-        data.put(USER_NAME, user.getDisplayName());
+        data.put(USER_NAME, USER.getDisplayName());
 
-        firestore.collection(ROOT_COLLECTION).document(user.getUid()).set(data);
+        FIRESTORE.collection(ROOT_COLLECTION).document(USER.getUid()).set(data);
+    }
+
+
+    //Backing up products to the SQLite Database
+    public void backupProducts()
+    {
+        Cursor cursor = MY_SQLITE_DB.readProductsTableData();
+        Map<String, Object> products = new HashMap<>();
+
+        setLastBackupData();
 
         //Clearing the Products
         /////////////////////////
-        firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
+        FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(task ->
                 {
@@ -167,19 +190,45 @@ public class FirestoreHandler
                         {
                             Log.d(TAG, document.getId() + " => " + document.getData().get("code"));
 
-                            firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
+                            FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
                                     .document(document.getId()).delete();
                         }
 
-                        backupProducts();
+                        if(cursor != null)
+                        {
+                            while (cursor.moveToNext())
+                            {
+                                products.put("code", cursor.getString(0));
+                                products.put("name", cursor.getString(1));
+                                products.put("grade", cursor.getString(2));
+                                products.put("nova_grade", String.valueOf(cursor.getInt(3)));
+                                products.put("ingredients", cursor.getString(4));
+                                products.put("nutrients", cursor.getString(5));
+                                //TODO: DID not backup the Image yet
+                                //products.put("product_image", cursor.getString(6));
+
+                                FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
+                                        .document(cursor.getString(0)).set(products);
+                            }
+                        }
                     }
                     else
                         Log.w(TAG, "Error getting documents.", task.getException());
                 });
+
+    }
+
+    //Backup lists to the Firestore database
+    public void backupLists()
+    {
+        Cursor cursor = MY_SQLITE_DB.readListsTableData();
+        Map<String, Object> lists = new HashMap<>();
+
+        setLastBackupData();
 
         //Clearing the Lists
         /////////////////////////
-        firestore.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
+        FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(task ->
                 {
@@ -189,19 +238,40 @@ public class FirestoreHandler
                         {
                             Log.d(TAG, document.getId() + " => " + document.getData().get("code"));
 
-                            firestore.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
+                            FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
                                     .document(document.getId()).delete();
                         }
 
-                        backupLists();
+                        if(cursor != null)
+                        {
+                            while (cursor.moveToNext())
+                            {
+                                lists.put("id", String.valueOf(cursor.getInt(0)));
+                                lists.put("list_name", cursor.getString(1));
+                                lists.put("list_description", cursor.getString(2));
+                                lists.put("list_colour", String.valueOf(cursor.getInt(3)));
+
+                                FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
+                                        .document(cursor.getString(0)).set(lists);
+                            }
+                        }
                     }
                     else
                         Log.w(TAG, "Error getting documents.", task.getException());
                 });
+    }
+
+    //Backup products_to_lists to the firestore database
+    public void backupProductsToLists()
+    {
+        Cursor cursor = MY_SQLITE_DB.readProductsToListsTableData();
+        Map<String, Object> productsToLists = new HashMap<>();
+
+        setLastBackupData();
 
         //Clearing products_to_lists lists
         /////////////////////////
-        firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
+        FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(task ->
                 {
@@ -209,84 +279,25 @@ public class FirestoreHandler
                     {
                         for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
                         {
-                            firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
+                            FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
                                     .document(document.getId()).delete();
                         }
 
 
-                        backupProductsToLists();
+                        if(cursor != null)
+                        {
+                            while (cursor.moveToNext())
+                            {
+                                productsToLists.put("product_code", cursor.getString(0));
+                                productsToLists.put("list_id", cursor.getString(1));
+
+                                FIRESTORE.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
+                                        .document(cursor.getString(0) +"_"+ cursor.getInt(1)).set(productsToLists);
+                            }
+                        }
                     }
                     else
                         Log.w(TAG, "Error getting documents.", task.getException());
-
-                    progressDialog.dismiss();
                 });
-    }
-
-
-    private void backupProducts()
-    {
-        Cursor cursor;
-        Map<String, Object> products = new HashMap<>();
-
-        cursor = mySQLiteDB.readProductsTableData();
-        if(cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                products.put("code", cursor.getString(0));
-                products.put("name", cursor.getString(1));
-                products.put("grade", cursor.getString(2));
-                products.put("nova_grade", String.valueOf(cursor.getInt(3)));
-                products.put("ingredients", cursor.getString(4));
-                products.put("nutrients", cursor.getString(5));
-                //TODO: DID not backup the Image yet
-                //products.put("product_image", cursor.getString(6));
-
-                firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_COLLECTION)
-                        .document(cursor.getString(0)).set(products);
-            }
-        }
-
-    }
-
-    private void backupLists()
-    {
-        Cursor cursor;
-        Map<String, Object> lists = new HashMap<>();
-
-        cursor = mySQLiteDB.readListsTableData();
-        if(cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                lists.put("id", String.valueOf(cursor.getInt(0)));
-                lists.put("list_name", cursor.getString(1));
-                lists.put("list_description", cursor.getString(2));
-                lists.put("list_colour", String.valueOf(cursor.getInt(3)));
-
-                firestore.collection(ROOT_COLLECTION).document(userID).collection(LISTS_COLLECTION)
-                        .document(cursor.getString(0)).set(lists);
-            }
-        }
-    }
-
-    private void backupProductsToLists()
-    {
-        Cursor cursor;
-        Map<String, Object> productsToLists = new HashMap<>();
-
-        cursor = mySQLiteDB.readProductsToListsTableData();
-        if(cursor != null)
-        {
-            while (cursor.moveToNext())
-            {
-                productsToLists.put("product_code", cursor.getString(0));
-                productsToLists.put("list_id", cursor.getString(1));
-
-                firestore.collection(ROOT_COLLECTION).document(userID).collection(PRODUCTS_TO_LISTS_COLLECTION)
-                        .document(cursor.getString(0) +"_"+ cursor.getInt(1)).set(productsToLists);
-            }
-        }
     }
 }

@@ -21,6 +21,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
     private Context context;
     private FirebaseAuth auth;
     private FirebaseUser user;
+    private FirestoreHandler firestoreHandler;
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "localDB.db";
@@ -69,7 +70,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
     * auto backup option, the database will be uploaded to firestore when the user interacts with the
     * SQLite db*/
     ////////////////////////////////////////////////////////////////////////////////////////////////////
-    private void autoBackupIfEnabled()
+    public boolean autoBackupEnabled()
     {
         //Firebase Google authentication
         auth = FirebaseAuth.getInstance();
@@ -77,11 +78,12 @@ public class MySQLiteDB extends SQLiteOpenHelper
 
         if(user != null)
         {
-            FirestoreHandler firestoreHandler = new FirestoreHandler(context);
+            firestoreHandler = new FirestoreHandler(context);
             Cursor cursor = getUserPreferences(firestoreHandler.getUserID());
             if(cursor != null && cursor.getInt(1) == 1)
-                firestoreHandler.backUpLocalStorage();
+               return true;
         }
+        return false;
     }
 
 
@@ -397,7 +399,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
 
         addProductsToLists(product.getCode(), 0);
 
-        autoBackupIfEnabled();
+        if(autoBackupEnabled())
+            firestoreHandler.backupProducts();
+
     }
 
     //Update product in the database if the user clicks the refresh option
@@ -416,7 +420,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
 
         db.update(PRODUCTS_TABLE, cv, COLUMN_CODE + "=?", new String[]{updatedProduct.getCode()});
 
-        autoBackupIfEnabled();
+        if(autoBackupEnabled())
+            firestoreHandler.backupProducts();
     }
 
     //This methods removes a product from the database by taking the barcode as a parameter
@@ -426,7 +431,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
         SQLiteDatabase db = this.getReadableDatabase();
         db.delete(PRODUCTS_TABLE, COLUMN_CODE + " =? ", new String[]{barcode});
 
-        autoBackupIfEnabled();
+        if(autoBackupEnabled())
+            firestoreHandler.backupProducts();
     }
 
     //Adding/Deleting a List to the database
@@ -457,7 +463,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
         cv.put(COLUMN_LIST_COLOUR, colour);
 
         db.update(LISTS_TABLE, cv, COLUMN_ID + "=?", new String[]{Integer.toString(listId)});
-        autoBackupIfEnabled();
+
+        if(autoBackupEnabled())
+            firestoreHandler.backupLists();
     }
 
 
@@ -475,7 +483,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
         cv.put(COLUMN_LIST_COLOUR, list.getListColour());
 
         db.insert(LISTS_TABLE, null, cv);
-        autoBackupIfEnabled();
+
+        if(autoBackupEnabled())
+            firestoreHandler.backupLists();
     }
 
     //This method will delete all the lists as a batch
@@ -485,7 +495,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
         SQLiteDatabase db = getWritableDatabase();
         db.delete(LISTS_TABLE, COLUMN_ID + "!=?", new String[]{Integer.toString(0)});
         db.delete(PRODUCTS_TO_LISTS_TABLE, COLUMN_LIST_ID + "!=?", new String[]{Integer.toString(0)});
-        autoBackupIfEnabled();
+
+        if(autoBackupEnabled())
+            firestoreHandler.backupLists();
     }
 
     //This method will delete a single list by taking the listID
@@ -500,7 +512,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
         //Deleting a list will delete it's references in the products to list table as well
         db.execSQL("DELETE FROM " + PRODUCTS_TO_LISTS_TABLE + " WHERE " + COLUMN_LIST_ID + " =\"" + listID + "\" ;");
 
-        autoBackupIfEnabled();
+        if(autoBackupEnabled())
+            firestoreHandler.backupLists();
     }
 
     //This method returns the number of same rpoducts in diffrent lists
@@ -536,7 +549,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
         cv.put(COLUMN_LIST_ID, list.getId());
 
         db.insert(PRODUCTS_TO_LISTS_TABLE, null, cv);
-        autoBackupIfEnabled();
+
+        if(autoBackupEnabled())
+            firestoreHandler.backupProductsToLists();
     }
 
     //This method will too map a product to the database taking a String and an int as parameters
@@ -550,8 +565,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
         cv.put(COLUMN_LIST_ID, listId);
 
         db.insert(PRODUCTS_TO_LISTS_TABLE, null, cv);
-        autoBackupIfEnabled();
 
+        if(autoBackupEnabled())
+            firestoreHandler.backupProductsToLists();
     }
 
     //This method will too map a product to the database taking two strings as parameters
@@ -565,8 +581,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
         cv.put(COLUMN_LIST_ID, Integer.parseInt(listId));
 
         db.insert(PRODUCTS_TO_LISTS_TABLE, null, cv);
-        autoBackupIfEnabled();
 
+        if(autoBackupEnabled())
+            firestoreHandler.backupProductsToLists();
     }
 
     //This method removes the mapping of a product from it's list
@@ -575,7 +592,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
     {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(PRODUCTS_TO_LISTS_TABLE, "product_code=? AND list_id=?", new String[]{productCode, Integer.toString(listId)});
-        autoBackupIfEnabled();
+
+        if(autoBackupEnabled())
+            firestoreHandler.backupProductsToLists();
     }
 
     //This method clears all products from the list
@@ -584,7 +603,9 @@ public class MySQLiteDB extends SQLiteOpenHelper
     {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(PRODUCTS_TO_LISTS_TABLE, "list_id=?", new String[]{Integer.toString(listId)});
-        autoBackupIfEnabled();
+
+        if(autoBackupEnabled())
+            firestoreHandler.backupProductsToLists();
     }
 
 
@@ -598,6 +619,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
         db.delete(LISTS_TABLE, COLUMN_ID + "!=?", new String[]{Integer.toString(0)});
         db.execSQL("DELETE FROM " + PRODUCTS_TO_LISTS_TABLE);
 
-        autoBackupIfEnabled();
+        if(autoBackupEnabled())
+            firestoreHandler.backUpLocalStorage();
     }
 }
