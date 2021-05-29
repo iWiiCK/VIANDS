@@ -24,9 +24,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
 {
     //The variables need for the auto backup system
     //////////////////////////////////////////////
-    private Context context;
-    private FirebaseAuth auth;
-    private FirebaseUser user;
+    private final Context CONTEXT;
     private FirestoreHandler firestoreHandler;
 
     private static final int DATABASE_VERSION = 1;
@@ -69,7 +67,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
     public MySQLiteDB(@Nullable Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = context;
+        this.CONTEXT = context;
     }
 
     /*This method checks the user preferences and if the currently logged in user has selected the
@@ -79,12 +77,12 @@ public class MySQLiteDB extends SQLiteOpenHelper
     public boolean autoBackupEnabled()
     {
         //Firebase Google authentication
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
 
         if(user != null)
         {
-            firestoreHandler = new FirestoreHandler(context);
+            firestoreHandler = new FirestoreHandler(CONTEXT);
             Cursor cursor = getUserPreferences(firestoreHandler.getUSER_ID());
             return cursor != null && cursor.getInt(1) == 1;
         }
@@ -173,7 +171,6 @@ public class MySQLiteDB extends SQLiteOpenHelper
 
         }
         return cursor;
-
     }
 
     //This method checks if the user exists in the local database
@@ -409,17 +406,17 @@ public class MySQLiteDB extends SQLiteOpenHelper
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        cv.put(COLUMN_CODE, product.getCode());
+        cv.put(COLUMN_CODE, product.getCODE());
         cv.put(COLUMN_PRODUCT_NAME, product.getName());
-        cv.put(COLUMN_GRADE, product.getGrade());
-        cv.put(COLUMN_NOVA_GROUP, product.getNova_group());
-        cv.put(COLUMN_INGREDIENTS, product.getIngredients());
-        cv.put(COLUMN_NUTRIENTS, product.getNutrients());
-        cv.put(COLUMN_PRODUCT_IMAGE, product.getProductImage());
+        cv.put(COLUMN_GRADE, product.getGRADE());
+        cv.put(COLUMN_NOVA_GROUP, product.getNOVA_GROUP());
+        cv.put(COLUMN_INGREDIENTS, product.getINGREDIENTS());
+        cv.put(COLUMN_NUTRIENTS, product.getNUTRIENTS());
+        cv.put(COLUMN_PRODUCT_IMAGE, product.getPRODUCT_IMAGE());
 
         db.insert(PRODUCTS_TABLE, null, cv);
 
-        addProductsToLists(product.getCode(), 0);
+        addProductsToLists(product.getCODE(), 0);
 
         if(autoBackupEnabled())
             firestoreHandler.backupProducts();
@@ -434,13 +431,13 @@ public class MySQLiteDB extends SQLiteOpenHelper
         ContentValues cv = new ContentValues();
 
         cv.put(COLUMN_PRODUCT_NAME, updatedProduct.getName());
-        cv.put(COLUMN_GRADE, updatedProduct.getGrade());
-        cv.put(COLUMN_NOVA_GROUP, updatedProduct.getNova_group());
-        cv.put(COLUMN_INGREDIENTS, updatedProduct.getIngredients());
-        cv.put(COLUMN_NUTRIENTS, updatedProduct.getNutrients());
-        cv.put(COLUMN_PRODUCT_IMAGE, updatedProduct.getProductImage());
+        cv.put(COLUMN_GRADE, updatedProduct.getGRADE());
+        cv.put(COLUMN_NOVA_GROUP, updatedProduct.getNOVA_GROUP());
+        cv.put(COLUMN_INGREDIENTS, updatedProduct.getINGREDIENTS());
+        cv.put(COLUMN_NUTRIENTS, updatedProduct.getNUTRIENTS());
+        cv.put(COLUMN_PRODUCT_IMAGE, updatedProduct.getPRODUCT_IMAGE());
 
-        db.update(PRODUCTS_TABLE, cv, COLUMN_CODE + "=?", new String[]{updatedProduct.getCode()});
+        db.update(PRODUCTS_TABLE, cv, COLUMN_CODE + "=?", new String[]{updatedProduct.getCODE()});
 
         if(autoBackupEnabled())
             firestoreHandler.backupProducts();
@@ -567,7 +564,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        cv.put(COLUMN_PRODUCT_CODE, product.getCode());
+        cv.put(COLUMN_PRODUCT_CODE, product.getCODE());
         cv.put(COLUMN_LIST_ID, list.getId());
 
         db.insert(PRODUCTS_TO_LISTS_TABLE, null, cv);

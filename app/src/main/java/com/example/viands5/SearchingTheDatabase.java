@@ -8,6 +8,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * 1 - This class handles the result of a API call.
+ * 2 - If the product exists, the data taken as JSON format are passed here.
+ * 3 - As for the terms of using the 'Open Food Facts API', a disclaimer message is also displayed to the user
+ *      before the user decided to view the results of a barcode scan.
+ */
 public class SearchingTheDatabase extends AppCompatActivity
 {
     TextView nameLabel, descriptionText;
@@ -43,13 +49,13 @@ public class SearchingTheDatabase extends AppCompatActivity
             }
 
             else
-            {
                 displayProductDetails();
-            }
 
         });
     }
 
+    //If the product exists, the details about the product are taken
+    ///////////////////////////////////////////////////////////////////
     private void displayProductDetails()
     {
         Intent i = new Intent(SearchingTheDatabase.this, DisplayingProductDetails.class);

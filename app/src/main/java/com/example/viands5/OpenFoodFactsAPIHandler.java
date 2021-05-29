@@ -1,25 +1,19 @@
 package com.example.viands5;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.util.Log;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -29,17 +23,20 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 1 - This class handles all aspects of handling the open food facts api
+ */
 public class OpenFoodFactsAPIHandler
 {
-    private Context context;
-    private Activity activity;
-    private String barcode, name, grade, ingredients = "", nutrients = "",productImageUrl, errorMessage;
+    private final Context CONTEXT;
+    private final Activity ACTIVITY;
+    private String barcode, name, grade, ingredients = "", nutrients = "",productImageUrl;
     private int statusCode = -1, novaGrade;
 
     public OpenFoodFactsAPIHandler(Activity activity, Context context, String barcode)
     {
-        this.context = context;
-        this.activity = activity;
+        this.CONTEXT = context;
+        this.ACTIVITY = activity;
         parseApiData(barcode);
     }
 
@@ -75,18 +72,22 @@ public class OpenFoodFactsAPIHandler
         return statusCode;
     }
 
+    //This method takes product barcode as a parameter and fetches the data according to that.
+    /////////////////////////////////////////////////////////////////////////////////////////////
     private void parseApiData(String productBarcode)
     {
-        ProgressDialog progressDialog = new ProgressDialog(context);
+        ProgressDialog progressDialog = new ProgressDialog(CONTEXT);
         progressDialog.setTitle("Connecting To the Database");
         progressDialog.setMessage("We are Still establishing a Connection to the Open Food Facts Database...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
         progressDialog.setIcon(R.drawable.open_food_facts_symbol);
 
+        //Concatenating the string to create the URL
         String url = "https://world.openfoodfacts.org/api/v0/product/";
         url += productBarcode + ".json";
 
+        //Creating a string request for fetching the data
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response ->
         {
             progressDialog.dismiss();
@@ -157,45 +158,47 @@ public class OpenFoodFactsAPIHandler
             {
                 progressDialog.dismiss();
                 statusCode = 0;
-                activity.finish();
+                ACTIVITY.finish();
             }
 
         }, volleyError -> {
             if (volleyError instanceof TimeoutError || volleyError instanceof NoConnectionError)
             {
-                Toast.makeText(context, "Connection Error !", Toast.LENGTH_LONG).show();
+                Toast.makeText(CONTEXT, "Connection Error !", Toast.LENGTH_LONG).show();
 
             }
             else if (volleyError instanceof AuthFailureError)
             {
-                Toast.makeText(context, "Authentication/ Auth Error !", Toast.LENGTH_LONG).show();
+                Toast.makeText(CONTEXT, "Authentication/ Auth Error !", Toast.LENGTH_LONG).show();
             }
             else if (volleyError instanceof ServerError)
             {
-                Toast.makeText(context, "Server Error !", Toast.LENGTH_LONG).show();
+                Toast.makeText(CONTEXT, "Server Error !", Toast.LENGTH_LONG).show();
             }
             else if (volleyError instanceof NetworkError)
             {
-                Toast.makeText(context, "Network Error !", Toast.LENGTH_LONG).show();
+                Toast.makeText(CONTEXT, "Network Error !", Toast.LENGTH_LONG).show();
             }
             else if (volleyError instanceof ParseError)
             {
-                Toast.makeText(context, "Parse Error !", Toast.LENGTH_LONG).show();
+                Toast.makeText(CONTEXT, "Parse Error !", Toast.LENGTH_LONG).show();
             }
 
-            activity.finish();
+            ACTIVITY.finish();
         })
         {
-            //Assigning the User Agent
+            //Assigning the User Agent for the request
             @Override
-            public Map<String, String> getHeaders() {
+            public Map<String, String> getHeaders()
+            {
                 Map<String, String>  params = new HashMap<>();
                 params.put("User-Agent:", "Viands - Android - Version 1.0");
                 return params;
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //Creating a request queue using the Volley API
+        RequestQueue requestQueue = Volley.newRequestQueue(CONTEXT);
         requestQueue.add(stringRequest);
         progressDialog.show();
     }

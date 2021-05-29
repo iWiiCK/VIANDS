@@ -1,50 +1,49 @@
 package com.example.viands5;
 
 import android.util.Log;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+/**
+ * 1 - This class handles creation of a Product object
+ */
 public class Product
 {
-    private String code, name, grade, ingredients, nutrients;
-    private int nova_group;
-    private byte[] productImage;
+    private final String CODE;
+    private String name;
+    private final String GRADE;
+    private final String INGREDIENTS;
+    private final String NUTRIENTS;
+    private final int NOVA_GROUP;
+    private final byte[] PRODUCT_IMAGE;
 
     public Product(String code, String name, String grade, int nova_group, String ingredients, String nutrients, @Nullable byte[] productImage)
     {
-        this.code = code;
+        this.CODE = code;
         this.name = name;
-        this.grade = grade;
-        this.nova_group = nova_group;
-        this.ingredients = ingredients;
-        this.nutrients = nutrients;
-        this.productImage = productImage;
+        this.GRADE = grade;
+        this.NOVA_GROUP = nova_group;
+        this.INGREDIENTS = ingredients;
+        this.NUTRIENTS = nutrients;
+        this.PRODUCT_IMAGE = productImage;
     }
 
     public Product(String code, String name, String grade, String nova_group, String ingredients, String nutrients, @Nullable byte[] productImage)
     {
-        this.code = code;
+        this.CODE = code;
         this.name = name;
-        this.grade = grade;
-        this.nova_group = Integer.parseInt(nova_group);
-        this.ingredients = ingredients;
-        this.nutrients = nutrients;
-        this.productImage = productImage;
+        this.GRADE = grade;
+        this.NOVA_GROUP = Integer.parseInt(nova_group);
+        this.INGREDIENTS = ingredients;
+        this.NUTRIENTS = nutrients;
+        this.PRODUCT_IMAGE = productImage;
 
         Log.d("product", "Nova Group" + " => " + nova_group);
     }
 
 
-    public String getCode()
+    public String getCODE()
     {
-        return code;
-    }
-
-    public void setCode(String code)
-    {
-        this.code = code;
+        return CODE;
     }
 
     public String getName()
@@ -57,48 +56,28 @@ public class Product
         this.name = name;
     }
 
-    public String getGrade()
+    public String getGRADE()
     {
-        return grade;
+        return GRADE;
     }
 
-    public void setGrade(String grade)
-    {
-        this.grade = grade;
-    }
-
-    public String getIngredients()
+    public String getINGREDIENTS()
 
     {
-        return ingredients;
+        return INGREDIENTS;
     }
 
-    public void setIngredients(String ingredients)
+    public String getNUTRIENTS()
     {
-        this.ingredients = ingredients;
+        return NUTRIENTS;
     }
 
-    public String getNutrients()
+    public int getNOVA_GROUP()
     {
-        return nutrients;
+        return NOVA_GROUP;
     }
 
-    public void setNutrients(String nutrients)
-    {
-        this.nutrients = nutrients;
-    }
-
-    public int getNova_group()
-    {
-        return nova_group;
-    }
-
-    public void setNova_group(int nova_group)
-    {
-        this.nova_group = nova_group;
-    }
-
-    public byte[] getProductImage() {
-        return productImage;
+    public byte[] getPRODUCT_IMAGE() {
+        return PRODUCT_IMAGE;
     }
 }

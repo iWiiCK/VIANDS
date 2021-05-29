@@ -118,12 +118,12 @@ public class ClickedList extends AppCompatActivity
                 true,
                 listId,
                 productInList.getBarcodeInList(),
-                productInList.getName(),
-                productInList.getGrade(),
-                productInList.getNovaGroup(),
-                productInList.getIngredients(),
-                productInList.getNutrients(),
-                productInList.getProductImage());
+                productInList.getNAME(),
+                productInList.getGRADE(),
+                productInList.getNOVA_GROUP(),
+                productInList.getINGREDIENTS(),
+                productInList.getNUTRIENTS(),
+                productInList.getPRODUCT_IMAGE());
 
         RecyclerView recyclerView = findViewById(R.id.clickedListRecyclerView);
         recyclerView.setAdapter(customLinearAdapter);

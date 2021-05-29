@@ -115,12 +115,12 @@ public class MainScreenActivity extends AppCompatActivity
         ///////////////////////////////////////////////////////////////////////////////////////////
         CustomLinearAdapter customLinearAdapter = new CustomLinearAdapter(MainScreenActivity.this, this, false, 0,
                 productInList.getBarcodeInList(),
-                productInList.getName(),
-                productInList.getGrade(),
-                productInList.getNovaGroup(),
-                productInList.getIngredients(),
-                productInList.getNutrients(),
-                productInList.getProductImage());
+                productInList.getNAME(),
+                productInList.getGRADE(),
+                productInList.getNOVA_GROUP(),
+                productInList.getINGREDIENTS(),
+                productInList.getNUTRIENTS(),
+                productInList.getPRODUCT_IMAGE());
 
 
         RecyclerView recyclerView = findViewById(R.id.mainScreenRecyclerView);

@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 
+/**
+ * 1 - This class handles the typing of a barcode
+ * 2 - When the user type a barcode. The types barcode is passed to the OpenFoodFactsApiHandler class
+ */
 public class TypeBarcode extends AppCompatActivity
 {
-    private Button cancelButton, searchButton;
     private TextView barcodePlainText;
 
     @Override
@@ -24,9 +27,9 @@ public class TypeBarcode extends AppCompatActivity
         //ab.
 
         barcodePlainText = findViewById(R.id.barcodePlainText);
-        cancelButton = findViewById(R.id.typeBarcodeButton);
+        Button cancelButton = findViewById(R.id.typeBarcodeButton);
 
-        searchButton = findViewById(R.id.searchButton);
+        Button searchButton = findViewById(R.id.searchButton);
         searchButton.setOnClickListener(v->
         {
             if(!(barcodePlainText.getText().toString().isEmpty()))
@@ -36,12 +39,8 @@ public class TypeBarcode extends AppCompatActivity
             }
         });
 
-
-
         cancelButton.setOnClickListener(v ->
-        {
-            finish();
-        });
+                finish());
 
     }
 
@@ -52,6 +51,8 @@ public class TypeBarcode extends AppCompatActivity
         finish();
     }
 
+    //This method passes the user typed barcode
+    ////////////////////////////////////////////////
     private void searchProduct(String barcode)
     {
         Intent i = new Intent(TypeBarcode.this, SearchingTheDatabase.class);

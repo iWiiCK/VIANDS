@@ -70,6 +70,7 @@ public class ManageCustomListsActivity extends AppCompatActivity
         new ItemTouchHelper(itemTouchHelper).attachToRecyclerView(recyclerView);
 
 
+        //Creating a new List activity
         CardView createNewListsClickable = findViewById(R.id.createNewListsClickable);
         createNewListsClickable.setOnClickListener(v ->
         {
@@ -77,6 +78,7 @@ public class ManageCustomListsActivity extends AppCompatActivity
             startActivity(i);
         });
 
+        //Viewing recent products list
         Button recentProductsListButton = findViewById(R.id.recentProductsListButton);
         recentProductsListButton.setOnClickListener(v ->
         {
