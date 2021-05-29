@@ -134,6 +134,7 @@ public class FirestoreHandler
 
     //This method will handle the Backup functionality of the application.
     //This included manual and automatic backup systems
+    ////////////////////////////////////////////////////////////////////////////////
     public void backUpLocalStorage()
     {
         ProgressDialog progressDialog = new ProgressDialog(CONTEXT);
@@ -156,6 +157,8 @@ public class FirestoreHandler
         progressDialog.dismiss();
     }
 
+    //Set the last back up timestamp in the firestore database
+    //////////////////////////////////////////////////////////////
     private void setLastBackupData()
     {
         String backupTime = String.valueOf(Calendar.getInstance().getTime());
@@ -170,6 +173,7 @@ public class FirestoreHandler
 
 
     //Backing up products to the SQLite Database
+    /////////////////////////////////////////////////
     public void backupProducts()
     {
         Cursor cursor = MY_SQLITE_DB.readProductsTableData();
@@ -218,6 +222,7 @@ public class FirestoreHandler
     }
 
     //Backup lists to the Firestore database
+    ////////////////////////////////////////////
     public void backupLists()
     {
         Cursor cursor = MY_SQLITE_DB.readListsTableData();
@@ -261,6 +266,7 @@ public class FirestoreHandler
     }
 
     //Backup products_to_lists to the firestore database
+    //////////////////////////////////////////////////////
     public void backupProductsToLists()
     {
         Cursor cursor = MY_SQLITE_DB.readProductsToListsTableData();

@@ -19,46 +19,35 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+/**
+ * 1 - This activity is the main screen of the entire application.
+ */
 public class MainScreenActivity extends AppCompatActivity
 {
-
-    private FirebaseAuth auth;
-    private FirebaseUser user;
     private boolean signedIn = false;
-
-
     private long back_pressed = 0;
-    private ImageButton customListsButton;
-    private Button scanNewProductButton;
-    private Button typeBarcodeButton;
 
-    private MySQLiteDB mySQLiteDB = new MySQLiteDB(MainScreenActivity.this);
-    private CustomLinearAdapter customLinearAdapter;
-    private RecyclerView recyclerView;
-
+    private final MySQLiteDB MY_SQLITE_DB = new MySQLiteDB(MainScreenActivity.this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+        CheckNetwork checkNetwork = new CheckNetwork(this);
 
         //Firebase Google authentication
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
 
+        //Checking whether the user is logged in with firestore;
         if(user != null)
             signedIn = true;
 
-
-        //Populating the Recycler View
-        /////////////////////////////////
+        //Populating the Recycler View with recent products the user saved
         populateRecyclerView();
-        CheckNetwork checkNetwork = new CheckNetwork(this);
-
 
         //Switching to the custom Lists Layout
-        ///////////////////////////////////////
-        customListsButton = findViewById(R.id.customListsButton);
+        ImageButton customListsButton = findViewById(R.id.customListsButton);
         customListsButton.setOnClickListener(v ->
         {
             Intent i = new Intent(MainScreenActivity.this, ManageCustomListsActivity.class);
@@ -66,9 +55,8 @@ public class MainScreenActivity extends AppCompatActivity
         });
 
 
-        //Enable the "xzing" barcode scanner when the user enters the "Scan new product" Button.
-        ////////////////////////////////////////////////////////////////////////////////////////
-        scanNewProductButton = findViewById(R.id.scanNewProductButton);
+        //Enable the "ZXING" barcode scanner when the user enters the "Scan new product" Button.
+        Button scanNewProductButton = findViewById(R.id.scanNewProductButton);
         scanNewProductButton.setOnClickListener(v ->
         {
             if(checkNetwork.isOnline())
@@ -85,7 +73,8 @@ public class MainScreenActivity extends AppCompatActivity
                 Toast.makeText(this, "You Are Offline !",Toast.LENGTH_SHORT).show();
         });
 
-        typeBarcodeButton = findViewById(R.id.typeBarcodeButton);
+        //Typing a barcode activity
+        Button typeBarcodeButton = findViewById(R.id.typeBarcodeButton);
         typeBarcodeButton.setOnClickListener(v ->
         {
             if(checkNetwork.isOnline())
@@ -107,14 +96,10 @@ public class MainScreenActivity extends AppCompatActivity
         final int DELAY = 2000;
 
         if (back_pressed + DELAY > System.currentTimeMillis())
-        {
             super.onBackPressed();
-        }
 
         else
-        {
-            Toast.makeText(getBaseContext(),"Back Press Once More To Exit", Toast.LENGTH_SHORT).show();
-        }
+            Toast.makeText(getBaseContext(), "Back Press Once More To Exit", Toast.LENGTH_SHORT).show();
 
         back_pressed = System.currentTimeMillis();
     }
@@ -124,11 +109,11 @@ public class MainScreenActivity extends AppCompatActivity
     private void populateRecyclerView()
     {
         ProductsInListHandler productInList = new ProductsInListHandler(0);//0 is the list if of Recent Products Lists.
-        productInList.loadList(mySQLiteDB);
+        productInList.loadList(MY_SQLITE_DB);
 
         //Populating the Recycler View
         ///////////////////////////////////////////////////////////////////////////////////////////
-        customLinearAdapter = new CustomLinearAdapter(MainScreenActivity.this , this, false,0,
+        CustomLinearAdapter customLinearAdapter = new CustomLinearAdapter(MainScreenActivity.this, this, false, 0,
                 productInList.getBarcodeInList(),
                 productInList.getName(),
                 productInList.getGrade(),
@@ -138,7 +123,7 @@ public class MainScreenActivity extends AppCompatActivity
                 productInList.getProductImage());
 
 
-        recyclerView = findViewById(R.id.mainScreenRecyclerView);
+        RecyclerView recyclerView = findViewById(R.id.mainScreenRecyclerView);
         recyclerView.setAdapter(customLinearAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainScreenActivity.this);
         linearLayoutManager.setStackFromEnd(true);
@@ -146,8 +131,11 @@ public class MainScreenActivity extends AppCompatActivity
         recyclerView.setLayoutManager(linearLayoutManager);
     }
 
+    //Updating the custom lists when restarting the activity
+    //////////////////////////////////////////////////////////
     @Override
-    protected void onRestart() {
+    protected void onRestart()
+    {
         super.onRestart();
         recreate();
     }
@@ -169,9 +157,7 @@ public class MainScreenActivity extends AppCompatActivity
             }
         }
         else
-        {
             super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
     @Override

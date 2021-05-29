@@ -112,11 +112,10 @@ public class LoginScreen extends AppCompatActivity
 
         else
             displaySignInScreen();
-
-
     }
 
     //Display the sign in screen to the user
+    ////////////////////////////////////////////
     private void displaySignInScreen()
     {
         signInLayout.setVisibility(View.VISIBLE);
@@ -128,6 +127,7 @@ public class LoginScreen extends AppCompatActivity
     }
 
     //if the user is already signed in, display this screen.
+    //////////////////////////////////////////////////////////
     private void displayAlreadyLoggedInScreen()
     {
         signInLayout.setVisibility(View.GONE);
@@ -143,6 +143,8 @@ public class LoginScreen extends AppCompatActivity
         });
     }
 
+    //This method handles all the user interaction with the switches
+    ///////////////////////////////////////////////////////////////////
     private void handleUserPreferencesInteractions()
     {
         boolean enableAutoBackup = false;
@@ -224,6 +226,8 @@ public class LoginScreen extends AppCompatActivity
         }
     }
 
+    //Autheticating google account of the user
+    /////////////////////////////////////////////
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         auth.signInWithCredential(credential)
@@ -249,6 +253,8 @@ public class LoginScreen extends AppCompatActivity
                 });
     }
 
+    //This method displayed all the user data to the user after a sucesfull authentification
+    //////////////////////////////////////////////////////////////////////////////////////////////
     private void displayUserData()
     {
         Picasso.get().load(user.getPhotoUrl()).into(googleAccountImage);
@@ -295,7 +301,8 @@ public class LoginScreen extends AppCompatActivity
                 displayRestoreAlert());
     }
 
-    //Restoring an already created backup
+    //Restoring an already created backup after diplaying an alert
+    /////////////////////////////////////////////////////////////////
     private void displayRestoreAlert()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -321,7 +328,8 @@ public class LoginScreen extends AppCompatActivity
         builder.create().show();
     }
 
-    //Creating a backup
+    //Creating a backup after displaying an alert for it
+    /////////////////////////////////////////////////////
     private void displayBackupOverrideAlert()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

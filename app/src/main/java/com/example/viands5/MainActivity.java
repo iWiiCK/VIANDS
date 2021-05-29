@@ -1,20 +1,22 @@
 package com.example.viands5;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
-import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-    MySQLiteDB mySQLiteDB;
-    private final String TAG = "Existing";
-
+/**
+ * 1 - this is the started activit of the application.
+ * 2 - after the splash screen, the user will be navigated to the application main menu.
+ * 3 - The SQLite table will be created if it was not created before
+ */
+public class MainActivity extends AppCompatActivity
+{
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -22,35 +24,43 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Create the Local SQLite database for Products, Lists and Products_toLists
-        mySQLiteDB = new MySQLiteDB(this);
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
 
+        //Create the Local SQLite database for Products, Lists and Products_toLists
+        MySQLiteDB mySQLiteDB = new MySQLiteDB(this);
+
+        //Checking whether the user is logged in with firestore;
+        if(user != null)
+        {
+            Cursor cursor = mySQLiteDB.getUserPreferences(user.getUid());
+
+            if(cursor != null)
+            {
+                if(cursor.getInt(1) == 1)
+                {
+                    //if the user has enabled auto backup, backup data at startup
+                    FirestoreHandler firestoreHandler = new FirestoreHandler(this);
+                    firestoreHandler.backUpLocalStorage();
+                }
+            }
+        }
 
         //TODO: Make sure you clear the dummy data base with the method after done testing.
         DummyDBData dummyDBData = new DummyDBData();
         //dummyDBData.loadDummyData(mySQLiteDB);
         //dummyDBData.clearDummyData(mySQLiteDB);
 
-        //Adding the default list
+        //Adding the default list if it doesn't exist
         if(!mySQLiteDB.defaultListExists())
             mySQLiteDB.addList(new List(0, "Recent Products", "This is a list of all the Recent Products Scanned By You", 0));
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                loadMainScreen(getBaseContext());
-            }
+        //Splash screen
+        new Handler(Looper.getMainLooper()).postDelayed(() ->
+        {
+            Intent i = new Intent(getBaseContext(), MainScreenActivity.class);
+            startActivity(i);
+            finish();
         }, DELAY_SECONDS* 1000);
-
-    }
-
-    //This will load the main screen
-    private void loadMainScreen(Context context)
-    {
-        //Creating the Default List which is the Recent Product List
-        /////////////////////////////////////////////////////////////
-        Intent i = new Intent(context, MainScreenActivity.class);
-        startActivity(i);
-        finish();
     }
 }

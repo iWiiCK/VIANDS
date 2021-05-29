@@ -14,6 +14,12 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * 1 - This class handles all the interaction between the SQLite database and the current user.
+ * 2 - More over, part of the application automatic backup system is handled by this class aswell.
+ * 3 - if the current user is logged into their account and performs CRUD operations, the data is automatically
+ *      backed up if the user preferences are set to automatic backup mode.
+ */
 public class MySQLiteDB extends SQLiteOpenHelper
 {
     //The variables need for the auto backup system
@@ -80,8 +86,7 @@ public class MySQLiteDB extends SQLiteOpenHelper
         {
             firestoreHandler = new FirestoreHandler(context);
             Cursor cursor = getUserPreferences(firestoreHandler.getUSER_ID());
-            if(cursor != null && cursor.getInt(1) == 1)
-               return true;
+            return cursor != null && cursor.getInt(1) == 1;
         }
         return false;
     }
@@ -188,19 +193,6 @@ public class MySQLiteDB extends SQLiteOpenHelper
         }
         return false;
 
-    }
-
-    /*This method updated the user preferences as the user selects them
-    * ///////////////////////////////////////////////////////////////////////*/
-    public void updateUserPreferences(String userID, int enableAutoBackup, int rememberLogin)
-    {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-
-        cv.put(COLUMN_ENABLE_AUTO_BACKUP, enableAutoBackup);
-        cv.put(COLUMN_REMEMBER_LOGIN, rememberLogin);
-
-        db.update(USER_PREFERENCES_TABLE, cv, COLUMN_USER_ID + "=?", new String[]{userID});
     }
 
     //Handles the user preferences about the auto backup options

@@ -25,18 +25,18 @@ import java.util.Collections;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
+/**
+ * 1 - This activity is there to handle the custom lists activities.
+ * 2 - When clicking on a lists, the mapped data of the products to the lists are accessed and all the
+ *      products on that particular list is displayed.
+ */
 public class ManageCustomListsActivity extends AppCompatActivity
 {
     private ArrayList<String> listName, listDescription, numOfItemsInList;
     private ArrayList<Integer> listId, listColour;
 
-    private CardView createNewListsClickable;
-    private Button recentProductsListButton;
-
-    private MySQLiteDB mySQLiteDB = new MySQLiteDB(ManageCustomListsActivity.this);
+    private final MySQLiteDB MY_SQLITE_DB = new MySQLiteDB(ManageCustomListsActivity.this);
     private CustomGridAdapter customGridAdapter;
-    private RecyclerView recyclerView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -45,7 +45,6 @@ public class ManageCustomListsActivity extends AppCompatActivity
         setContentView(R.layout.activity_manage_custom_lists);
 
         //Populating the Recycler View
-        ///////////////////////////////////////////////////////////////////////////////////////////
         loadDataFromDB();
         customGridAdapter = new CustomGridAdapter(ManageCustomListsActivity.this,
                 this,
@@ -57,7 +56,7 @@ public class ManageCustomListsActivity extends AppCompatActivity
                 listColour,
                 numOfItemsInList);
 
-        recyclerView = findViewById(R.id.customListsRecyclerView);
+        RecyclerView recyclerView = findViewById(R.id.customListsRecyclerView);
         recyclerView.setAdapter(customGridAdapter);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -71,14 +70,14 @@ public class ManageCustomListsActivity extends AppCompatActivity
         new ItemTouchHelper(itemTouchHelper).attachToRecyclerView(recyclerView);
 
 
-        createNewListsClickable = findViewById(R.id.createNewListsClickable);
+        CardView createNewListsClickable = findViewById(R.id.createNewListsClickable);
         createNewListsClickable.setOnClickListener(v ->
         {
             Intent i = new Intent(ManageCustomListsActivity.this, CreateNewList.class);
             startActivity(i);
         });
 
-        recentProductsListButton = findViewById(R.id.recentProductsListButton);
+        Button recentProductsListButton = findViewById(R.id.recentProductsListButton);
         recentProductsListButton.setOnClickListener(v ->
         {
             Intent i = new Intent(this, ClickedList.class);
@@ -88,9 +87,10 @@ public class ManageCustomListsActivity extends AppCompatActivity
             startActivity(i);
         });
 
-
     }
 
+    //Updating the custom lists when the activity is restarted
+    //////////////////////////////////////////////////////////////
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -107,17 +107,19 @@ public class ManageCustomListsActivity extends AppCompatActivity
         finish();
     }
 
+    //This method loads all the data from the SQLite database
+    ////////////////////////////////////////////////////////////
     private void loadDataFromDB()
     {
         int index = 1;
-        int count = 0;
+        int count;
         listId = new ArrayList<>();
         listName = new ArrayList<>();
         listDescription = new ArrayList<>();
         listColour = new ArrayList<>();
         numOfItemsInList = new ArrayList<>();
 
-        Cursor cursor = mySQLiteDB.readListsTableData();
+        Cursor cursor = MY_SQLITE_DB.readListsTableData();
 
         if(cursor.getCount() != 0)
         {
@@ -129,7 +131,7 @@ public class ManageCustomListsActivity extends AppCompatActivity
                 listName.add(cursor.getString(1));
                 listDescription.add(cursor.getString(2));
                 listColour.add(cursor.getInt(3));
-                count = mySQLiteDB.numOfProductsInList(index);
+                count = MY_SQLITE_DB.numOfProductsInList(index);
                 numOfItemsInList.add(count + " Items");
                 index++;
             }
@@ -156,6 +158,7 @@ public class ManageCustomListsActivity extends AppCompatActivity
             alertDeleteList((String)customGridAdapter.getListName().get(viewHolder.getAbsoluteAdapterPosition()), viewHolder.getLayoutPosition());
         }
 
+        //handling onswipe animations
         @Override
         public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
             new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
@@ -170,6 +173,8 @@ public class ManageCustomListsActivity extends AppCompatActivity
         }
     };
 
+    //Alert dialog when the user swipes to delete a list item
+    /////////////////////////////////////////////////////////////
     private void alertDeleteList(String name, int position)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -177,21 +182,18 @@ public class ManageCustomListsActivity extends AppCompatActivity
         builder.setMessage("Are you sure you want to Remove " + name + " ?" );
 
         builder.setPositiveButton("YES", (dialog, which) ->
-        {
-            customGridAdapter.removeList(position);
-
-        });
+                customGridAdapter.removeList(position));
 
         builder.setNegativeButton("NO", (dialog, which) ->
-        {
-            customGridAdapter.notifyItemChanged(position);
-        });
+                customGridAdapter.notifyItemChanged(position));
 
         builder.setCancelable(true);
         builder.create().show();
     }
 
 
+    //Alert dialog for when the user bacth deletes all the data ina list
+    //////////////////////////////////////////////////////////////////////
     private void displayDeleteAllOptions()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -199,9 +201,7 @@ public class ManageCustomListsActivity extends AppCompatActivity
         builder.setMessage("Are you sure you want to Clear all Custom Lists ?" );
 
         builder.setPositiveButton("YES", (dialog, which) ->
-        {
-            customGridAdapter.removeAllCustomLists();
-        });
+                customGridAdapter.removeAllCustomLists());
 
         builder.setNegativeButton("NO", (dialog, which) -> {});
 
@@ -224,7 +224,6 @@ public class ManageCustomListsActivity extends AppCompatActivity
             if(customGridAdapter.getLIST_IDS().size() > 0)
                 displayDeleteAllOptions();
         }
-
         return super.onOptionsItemSelected(item);
     }
 }
