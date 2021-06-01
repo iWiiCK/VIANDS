@@ -112,8 +112,10 @@ public class MySQLiteDB extends SQLiteOpenHelper
 
         String createProductsToListsTableQuery = "CREATE TABLE " + PRODUCTS_TO_LISTS_TABLE + "(" +
                 COLUMN_PRODUCT_CODE + " TEXT ," +
-                COLUMN_LIST_ID+ " INTEGER ," +
-                " PRIMARY KEY ( " + COLUMN_PRODUCT_CODE + ", " + COLUMN_LIST_ID + ")" +
+                COLUMN_LIST_ID + " INTEGER ," +
+                " PRIMARY KEY ( " + COLUMN_PRODUCT_CODE + ", " + COLUMN_LIST_ID + ")," +
+                " FOREIGN KEY (" + COLUMN_PRODUCT_CODE + ") REFERENCES " + PRODUCTS_TABLE + "(" + COLUMN_CODE + ")," +
+                " FOREIGN KEY (" + COLUMN_LIST_ID + ") REFERENCES " + LISTS_TABLE + "(" +COLUMN_ID + ")" +
                 ");";
 
 
