@@ -108,10 +108,8 @@ public class SearchingTheDatabase extends AppCompatActivity
 
         i.putExtra("PRODUCT_REFRESHED", refreshingProduct);
 
-        if(apiHandler.getGrade() != null && apiHandler.getNovaGrade() >= 1 && apiHandler.getNovaGrade() <= 4)
-            complete = true;
-        else
-            complete = false;
+        //Find whether the product is completed or not
+        complete = apiHandler.getGrade() != null && apiHandler.getNovaGrade() >= 1 && apiHandler.getNovaGrade() <= 4;
 
         i.putExtra("COMPLETE", complete);
         startActivity(i);

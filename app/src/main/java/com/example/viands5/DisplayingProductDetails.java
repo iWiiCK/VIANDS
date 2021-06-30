@@ -108,19 +108,6 @@ public class DisplayingProductDetails extends AppCompatActivity
             complete = extras.getBoolean("COMPLETE");
         }
 
-        if(!complete)
-        {
-            saveOrChangeListButton.setEnabled(false);
-            saveOrChangeListButton.setBackgroundColor(Color.GRAY);
-            Toast.makeText(this, "Incomplete Product !", Toast.LENGTH_SHORT).show();
-        }
-
-        else
-        {
-            saveOrChangeListButton.setEnabled(true);
-            saveOrChangeListButton.setBackgroundColor(getResources().getColor(R.color.viands_confirm_button_skin));
-        }
-
         Button cancelButton = findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(v ->
         {
@@ -176,6 +163,21 @@ public class DisplayingProductDetails extends AppCompatActivity
         {
             displayProductFromTheApi(extras);
 
+            /*Check whether the product is a completed product or not. the user is only allowed to save the product
+             * if the product is a completed one or at least completed with the nova grade and nutritional score*/
+            if(!complete)
+            {
+                saveOrChangeListButton.setEnabled(false);
+                saveOrChangeListButton.setBackgroundColor(Color.GRAY);
+                Toast.makeText(this, "Incomplete Product !", Toast.LENGTH_SHORT).show();
+            }
+
+            else
+            {
+                saveOrChangeListButton.setEnabled(true);
+                saveOrChangeListButton.setBackgroundColor(getResources().getColor(R.color.viands_confirm_button_skin));
+            }
+
             saveOrChangeListButton.setOnClickListener(v ->
             {
                 selectListToAdd();
@@ -188,7 +190,7 @@ public class DisplayingProductDetails extends AppCompatActivity
         }
     }
 
-    //Select a list to add the new porduct
+    //Select a list to add the new product
     //////////////////////////////////////////
     private void selectListToAdd()
     {

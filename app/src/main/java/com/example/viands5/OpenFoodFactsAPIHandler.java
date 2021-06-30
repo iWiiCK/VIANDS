@@ -32,7 +32,6 @@ public class OpenFoodFactsAPIHandler
     private final Activity ACTIVITY;
     private String barcode, name, grade, ingredients = "", nutrients = "",productImageUrl;
     private int statusCode = -1, novaGrade;
-    private double completeness;
 
     public OpenFoodFactsAPIHandler(Activity activity, Context context, String barcode)
     {
@@ -73,8 +72,6 @@ public class OpenFoodFactsAPIHandler
         return statusCode;
     }
 
-    public double getComplete() {return completeness;}
-
     //This method takes product barcode as a parameter and fetches the data according to that.
     /////////////////////////////////////////////////////////////////////////////////////////////
     private void parseApiData(String productBarcode)
@@ -104,7 +101,6 @@ public class OpenFoodFactsAPIHandler
 
                 //Getting the Status code. 1 = product Found
                 statusCode = jsonObject.getInt("status");
-                completeness = product.getDouble("completeness");
 
                 if (statusCode != 0)
                 {
