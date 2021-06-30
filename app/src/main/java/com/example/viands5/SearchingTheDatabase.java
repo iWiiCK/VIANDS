@@ -42,9 +42,15 @@ public class SearchingTheDatabase extends AppCompatActivity
 
         viewResultsButton.setOnClickListener(v->
         {
-            if(apiHandler.getStatusCode() == -1 || apiHandler.getStatusCode() == 0)
+            if(apiHandler.getStatusCode() == -1 || apiHandler.getStatusCode() == 0 )
             {
                 Toast.makeText(this, "Ops!, Invalid Barcode", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            else if (apiHandler.getComplete() == 0)
+            {
+                Toast.makeText(this, "This Product Is INCOMPLETE", Toast.LENGTH_SHORT).show();
                 finish();
             }
 
