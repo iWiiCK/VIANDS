@@ -637,7 +637,8 @@ public class MySQLiteDB extends SQLiteOpenHelper
     {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + PRODUCTS_TABLE);
-        db.delete(LISTS_TABLE, COLUMN_ID + "!=?", new String[]{Integer.toString(0)});
+        //db.delete(LISTS_TABLE, COLUMN_ID + "!=?", new String[]{Integer.toString(0)});
+        db.execSQL("DELETE FROM " + LISTS_TABLE);
         db.execSQL("DELETE FROM " + PRODUCTS_TO_LISTS_TABLE);
 
         if(autoBackupEnabled())

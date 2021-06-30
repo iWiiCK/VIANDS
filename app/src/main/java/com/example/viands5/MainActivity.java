@@ -50,11 +50,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        //TODO: Make sure you clear the dummy data base with the method after done testing.
-        DummyDBData dummyDBData = new DummyDBData();
-        //dummyDBData.loadDummyData(mySQLiteDB);
-        //dummyDBData.clearDummyData(mySQLiteDB);
-
         //Adding the default list if it doesn't exist
         if(!mySQLiteDB.defaultListExists())
             mySQLiteDB.addList(new List(0, "Recent Products", "This is a list of all the Recent Products Scanned By You", 0));
