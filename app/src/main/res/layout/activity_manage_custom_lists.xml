@@ -21,6 +21,30 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ImageView
+                android:id="@+id/listEmptyImage3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:contentDescription="@string/this_will_be_displayed_when_the_list_is_empty"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/emptylistlogo" />
+
+            <TextView
+                android:id="@+id/listEmptyLabel2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:text="@string/list_is_empty"
+                android:textColor="#FFFFFF"
+                app:layout_constraintEnd_toEndOf="@+id/listEmptyImage3"
+                app:layout_constraintStart_toStartOf="@+id/listEmptyImage3"
+                app:layout_constraintTop_toBottomOf="@+id/listEmptyImage3" />
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/createNewListsClickable"
                 android:layout_width="wrap_content"

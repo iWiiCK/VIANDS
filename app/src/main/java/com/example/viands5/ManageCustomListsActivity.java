@@ -18,10 +18,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
@@ -38,11 +42,17 @@ public class ManageCustomListsActivity extends AppCompatActivity
     private final MySQLiteDB MY_SQLITE_DB = new MySQLiteDB(ManageCustomListsActivity.this);
     private CustomGridAdapter customGridAdapter;
 
+    private ImageView listEmptyImage;
+    private TextView listEmptyLabel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_custom_lists);
+
+        listEmptyImage = findViewById(R.id.listEmptyImage3);
+        listEmptyLabel = findViewById(R.id.listEmptyLabel2);
 
         //Populating the Recycler View
         loadDataFromDB();
@@ -64,7 +74,7 @@ public class ManageCustomListsActivity extends AppCompatActivity
 
         //Adding a decorated divider to the recycler view items
         DividerItemDecoration itemDecorator = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        itemDecorator.setDrawable(ContextCompat.getDrawable(this, R.drawable.recycler_view_divider));
+        itemDecorator.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.recycler_view_divider)));
         recyclerView.addItemDecoration(itemDecorator);
 
         new ItemTouchHelper(itemTouchHelper).attachToRecyclerView(recyclerView);
@@ -91,6 +101,13 @@ public class ManageCustomListsActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        setEmptyListImageVisibility();
+    }
+
     //Updating the custom lists when the activity is restarted
     //////////////////////////////////////////////////////////////
     @Override
@@ -107,6 +124,21 @@ public class ManageCustomListsActivity extends AppCompatActivity
     {
         super.onBackPressed();
         finish();
+    }
+
+    private void setEmptyListImageVisibility()
+    {
+        if(listId.isEmpty())
+        {
+            listEmptyImage.setVisibility(View.VISIBLE);
+            listEmptyLabel.setVisibility(View.VISIBLE);
+        }
+
+        else
+        {
+            listEmptyImage.setVisibility(View.GONE);
+            listEmptyLabel.setVisibility(View.GONE);
+        }
     }
 
     //This method loads all the data from the SQLite database
@@ -157,7 +189,7 @@ public class ManageCustomListsActivity extends AppCompatActivity
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
         {
-            alertDeleteList((String)customGridAdapter.getListName().get(viewHolder.getAbsoluteAdapterPosition()), viewHolder.getLayoutPosition());
+            alertDeleteList(customGridAdapter.getListName().get(viewHolder.getAbsoluteAdapterPosition()), viewHolder.getLayoutPosition());
         }
 
         //handling onswipe animations
@@ -184,7 +216,10 @@ public class ManageCustomListsActivity extends AppCompatActivity
         builder.setMessage("Are you sure you want to Remove " + name + " ?" );
 
         builder.setPositiveButton("YES", (dialog, which) ->
-                customGridAdapter.removeList(position));
+        {
+            customGridAdapter.removeList(position);
+            setEmptyListImageVisibility();
+        });
 
         builder.setNegativeButton("NO", (dialog, which) ->
                 customGridAdapter.notifyItemChanged(position));
@@ -203,7 +238,10 @@ public class ManageCustomListsActivity extends AppCompatActivity
         builder.setMessage("Are you sure you want to Clear all Custom Lists ?" );
 
         builder.setPositiveButton("YES", (dialog, which) ->
-                customGridAdapter.removeAllCustomLists());
+        {
+            customGridAdapter.removeAllCustomLists();
+            setEmptyListImageVisibility();
+        });
 
         builder.setNegativeButton("NO", (dialog, which) -> {});
 

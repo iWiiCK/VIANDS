@@ -21,6 +21,7 @@ public class SearchingTheDatabase extends AppCompatActivity
     OpenFoodFactsAPIHandler apiHandler;
 
     boolean refreshingProduct = false;
+    boolean complete = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -48,12 +49,6 @@ public class SearchingTheDatabase extends AppCompatActivity
                 finish();
             }
 
-            else if (apiHandler.getComplete() == 0)
-            {
-                Toast.makeText(this, "This Product Is INCOMPLETE", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-
             else
                 displayProductDetails();
 
@@ -69,16 +64,31 @@ public class SearchingTheDatabase extends AppCompatActivity
         i.putExtra("API_NAME", apiHandler.getName());
         i.putExtra("API_GRADE", apiHandler.getGrade());
 
-        if(apiHandler.getGrade().equals("a"))
-            i.putExtra("API_GRADE_DRAWABLE", R.drawable.nutritional_value_a);
-        else if(apiHandler.getGrade().equals("b"))
-            i.putExtra("API_GRADE_DRAWABLE", R.drawable.nutritional_value_b);
-        else if(apiHandler.getGrade().equals("c"))
-            i.putExtra("API_GRADE_DRAWABLE", R.drawable.nutritional_value_c);
-        else if(apiHandler.getGrade().equals("d"))
-            i.putExtra("API_GRADE_DRAWABLE", R.drawable.nutritional_value_d);
+        if(apiHandler.getGrade() == null)
+            i.putExtra("API_GRADE_DRAWABLE", R.drawable.nutritional_value_unknown);
         else
-            i.putExtra("API_GRADE_DRAWABLE", R.drawable.nutritional_value_e);
+        {
+                switch (apiHandler.getGrade()) {
+                    case "a":
+                        i.putExtra("API_GRADE_DRAWABLE", R.drawable.nutritional_value_a);
+                        break;
+                    case "b":
+                        i.putExtra("API_GRADE_DRAWABLE", R.drawable.nutritional_value_b);
+                        break;
+                    case "c":
+                        i.putExtra("API_GRADE_DRAWABLE", R.drawable.nutritional_value_c);
+                        break;
+                    case "d":
+                        i.putExtra("API_GRADE_DRAWABLE", R.drawable.nutritional_value_d);
+                        break;
+                    case "e":
+                        i.putExtra("API_GRADE_DRAWABLE", R.drawable.nutritional_value_e);
+                        break;
+                    default:
+                        i.putExtra("API_GRADE_DRAWABLE", R.drawable.nutritional_value_unknown);
+                        break;
+                }
+        }
 
         if(apiHandler.getNovaGrade() == 1)
             i.putExtra("API_NOVA_GROUP_DRAWABLE", R.drawable.nova_grade_1);
@@ -86,8 +96,10 @@ public class SearchingTheDatabase extends AppCompatActivity
             i.putExtra("API_NOVA_GROUP_DRAWABLE", R.drawable.nova_grade_2);
         else if(apiHandler.getNovaGrade() == 3)
             i.putExtra("API_NOVA_GROUP_DRAWABLE", R.drawable.nova_grade_3);
-        else
+        else if(apiHandler.getNovaGrade() == 4)
             i.putExtra("API_NOVA_GROUP_DRAWABLE", R.drawable.nova_grade_4);
+        else
+            i.putExtra("API_NOVA_GROUP_DRAWABLE", R.drawable.nova_grade_unknown);
 
         i.putExtra("API_NOVA_GROUP", apiHandler.getNovaGrade());
         i.putExtra("API_INGREDIENTS", apiHandler.getIngredients());
@@ -95,6 +107,13 @@ public class SearchingTheDatabase extends AppCompatActivity
         i.putExtra("PRODUCT_IMAGE_URL", apiHandler.getProductImageUrl());
 
         i.putExtra("PRODUCT_REFRESHED", refreshingProduct);
+
+        if(apiHandler.getGrade() != null && apiHandler.getNovaGrade() >= 1 && apiHandler.getNovaGrade() <= 4)
+            complete = true;
+        else
+            complete = false;
+
+        i.putExtra("COMPLETE", complete);
         startActivity(i);
         finish();
     }

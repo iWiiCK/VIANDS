@@ -31,7 +31,8 @@ public class OpenFoodFactsAPIHandler
     private final Context CONTEXT;
     private final Activity ACTIVITY;
     private String barcode, name, grade, ingredients = "", nutrients = "",productImageUrl;
-    private int statusCode = -1, novaGrade, complete;
+    private int statusCode = -1, novaGrade;
+    private double completeness;
 
     public OpenFoodFactsAPIHandler(Activity activity, Context context, String barcode)
     {
@@ -72,7 +73,7 @@ public class OpenFoodFactsAPIHandler
         return statusCode;
     }
 
-    public int getComplete() {return complete;}
+    public double getComplete() {return completeness;}
 
     //This method takes product barcode as a parameter and fetches the data according to that.
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,9 +104,9 @@ public class OpenFoodFactsAPIHandler
 
                 //Getting the Status code. 1 = product Found
                 statusCode = jsonObject.getInt("status");
-                complete = product.getInt("complete");
+                completeness = product.getDouble("completeness");
 
-                if (statusCode != 0 && complete != 0)
+                if (statusCode != 0)
                 {
                     //product barcode; - DONE
                     ///////////////////////////////////////////////////////////////////////////////////////
@@ -124,7 +125,7 @@ public class OpenFoodFactsAPIHandler
                     novaGrade = product.getInt("nova_group");
 
                     //product Ingredients - DONE
-                    ingredients = product.getString("ingredients_text_en");
+                    ingredients = product.getString("ingredients_text");
                     ///////////////////////////////////////////////////////////////////////////////////////
 
                     //product Image Url - DONE
@@ -163,7 +164,6 @@ public class OpenFoodFactsAPIHandler
                 progressDialog.dismiss();
                 statusCode = 0;
                 ACTIVITY.finish();
-                Toast.makeText(CONTEXT, "Exception", Toast.LENGTH_SHORT).show();
             }
 
         }, volleyError -> {

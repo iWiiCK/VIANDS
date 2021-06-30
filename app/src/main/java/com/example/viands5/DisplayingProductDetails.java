@@ -57,7 +57,7 @@ public class DisplayingProductDetails extends AppCompatActivity
     private String name, grade, ingredients, nutrients ;
     private int novaGroup, gradeDrawable, novaGroupDrawable;
     private byte[] byteProductImage = null;
-    private boolean refreshedProduct = false;
+    private boolean refreshedProduct = false, complete = true;
 
     private ArrayList<String> listName, listDescription, numOfItemsInList;
     private ArrayList<Integer> listIds, listColour;
@@ -105,6 +105,20 @@ public class DisplayingProductDetails extends AppCompatActivity
             loadedFromList = extras.getBoolean("LOADED_FROM_LIST");
             listId = extras.getInt("LIST_ID");
             refreshedProduct = extras.getBoolean("PRODUCT_REFRESHED");
+            complete = extras.getBoolean("COMPLETE");
+        }
+
+        if(!complete)
+        {
+            saveOrChangeListButton.setEnabled(false);
+            saveOrChangeListButton.setBackgroundColor(Color.GRAY);
+            Toast.makeText(this, "Incomplete Product !", Toast.LENGTH_SHORT).show();
+        }
+
+        else
+        {
+            saveOrChangeListButton.setEnabled(true);
+            saveOrChangeListButton.setBackgroundColor(getResources().getColor(R.color.viands_confirm_button_skin));
         }
 
         Button cancelButton = findViewById(R.id.cancelButton);
